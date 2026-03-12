@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard — WA Automation</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Segoe UI", sans-serif;
+        background: #f0f2f5;
+      }
+      .navbar {
+        background: white;
+        padding: 16px 32px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      }
+      .navbar h1 {
+        color: #25d366;
+        font-size: 20px;
+      }
+      .navbar button {
+        background: #f0f2f5;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 14px;
+      }
+      .navbar button:hover {
+        background: #e0e0e0;
+      }
+      .main {
+        padding: 32px;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      .business-name {
+        font-size: 24px;
+        font-weight: 700;
+        color: #1a1a1a;
+        margin-bottom: 8px;
+      }
+      .business-number {
+        color: #666;
+        font-size: 14px;
+        margin-bottom: 32px;
+      }
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        margin-bottom: 32px;
+      }
+      .stat-card {
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      }
+      .stat-card h3 {
+        font-size: 32px;
+        font-weight: 700;
+        color: #25d366;
+      }
+      .stat-card p {
+        color: #666;
+        font-size: 14px;
+        margin-top: 4px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        margin-bottom: 32px;
+      }
+      .card {
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      }
+      .card h2 {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 16px;
+        color: #1a1a1a;
+      }
+      .intent-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px solid #f0f0f0;
+        font-size: 14px;
+      }
+      .intent-item:last-child {
+        border-bottom: none;
+      }
+      .badge {
+        background: #e8f8ef;
+        color: #25d366;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+      .conversations {
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        margin-bottom: 32px;
+      }
+      .conversations h2 {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 16px;
+      }
+      .conv-item {
+        padding: 12px 0;
+        border-bottom: 1px solid #f0f0f0;
+      }
+      .conv-item:last-child {
+        border-bottom: none;
+      }
+      .conv-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 4px;
+      }
+      .conv-phone {
+        font-weight: 600;
+        font-size: 14px;
+        color: #1a1a1a;
+      }
+      .conv-time {
+        font-size: 12px;
+        color: #999;
+      }
+      .conv-message {
+        font-size: 13px;
+        color: #444;
+        margin-bottom: 4px;
+      }
+      .conv-reply {
+        font-size: 13px;
+        color: #25d366;
+      }
+      .settings {
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      }
+      .settings h2 {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 16px;
+      }
+      .form-group {
+        margin-bottom: 16px;
+      }
+      label {
+        display: block;
+        font-size: 13px;
+        color: #444;
+        margin-bottom: 6px;
+        font-weight: 500;
+      }
+      input,
+      textarea {
+        width: 100%;
+        padding: 10px 14px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 14px;
+        outline: none;
+      }
+      input:focus,
+      textarea:focus {
+        border-color: #25d366;
+      }
+      textarea {
+        resize: vertical;
+        min-height: 80px;
+      }
+      .save-btn {
+        background: #25d366;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .save-btn:hover {
+        background: #1ea855;
+      }
+      .success-msg {
+        color: #25d366;
+        font-size: 13px;
+        margin-top: 8px;
+        display: none;
+      }
+      .loading {
+        text-align: center;
+        padding: 60px;
+        color: #666;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="navbar">
+      <h1>💬 WA Automation</h1>
+      <button onclick="logout()">Logout</button>
+    </div>
+
+    <div class="main" id="main">
+      <div class="loading">Loading your dashboard...</div>
+    </div>
+
+    <script>
+      let businessData = null;
+
+      async function loadDashboard() {
+        const res = await fetch("/dashboard/data");
+        if (res.status === 401 || res.redirected) {
+          window.location.href = "/";
+          return;
+        }
+        const data = await res.json();
+        businessData = data.business;
+        renderDashboard(data);
+      }
+
+      function renderDashboard(data) {
+        const { business, conversations, analytics } = data;
+        const main = document.getElementById("main");
+
+        main.innerHTML = `
+        <div class="business-name">${business.name}</div>
+        <div class="business-number">📱 +${business.whatsapp_number}</div>
+
+        <div class="stats">
+          <div class="stat-card">
+            <h3>${analytics.totalMessages}</h3>
+            <p>Total Messages</p>
+          </div>
+          <div class="stat-card">
+            <h3>${analytics.uniqueCustomers}</h3>
+            <p>Unique Customers</p>
+          </div>
+          <div class="stat-card">
+            <h3>${conversations.length}</h3>
+            <p>Recent Conversations</p>
+          </div>
+        </div>
+
+        <div class="grid">
+          <div class="card">
+            <h2>🧠 Top Intents</h2>
+            ${analytics.intentStats
+              .slice(0, 6)
+              .map(
+                (i) => `
+              <div class="intent-item">
+                <span>${i._id || "unknown"}</span>
+                <span class="badge">${i.count}</span>
+              </div>
+            `
+              )
+              .join("")}
+          </div>
+          <div class="card">
+            <h2>⚙️ Quick Settings</h2>
+            <div class="form-group">
+              <label>Greeting Message</label>
+              <textarea id="greeting">${business.greeting}</textarea>
+            </div>
+            <div class="form-group">
+              <label>Location</label>
+              <input type="text" id="location" value="${business.location}" />
+            </div>
+            <button class="save-btn" onclick="saveSettings()">Save Changes</button>
+            <div class="success-msg" id="save-success">✅ Saved successfully!</div>
+          </div>
+        </div>
+
+        <div class="conversations">
+          <h2>💬 Recent Conversations</h2>
+          ${
+            conversations.length === 0
+              ? '<p style="color:#999;font-size:14px;">No conversations yet</p>'
+              : ""
+          }
+          ${conversations
+            .map(
+              (c) => `
+            <div class="conv-item">
+              <div class="conv-header">
+                <span class="conv-phone">📱 ${c.customer_phone}</span>
+                <span class="conv-time">${new Date(
+                  c.createdAt
+                ).toLocaleString()}</span>
+              </div>
+              <div class="conv-message">👤 ${c.message}</div>
+              <div class="conv-reply">🤖 ${c.reply}</div>
+            </div>
+          `
+            )
+            .join("")}
+        </div>
+
+        <div class="settings">
+          <h2>🏪 Business Settings</h2>
+          <div class="form-group">
+            <label>Business Name</label>
+            <input type="text" id="biz-name" value="${business.name}" />
+          </div>
+          <div class="form-group">
+            <label>Contact Phone</label>
+            <input type="text" id="biz-phone" value="${
+              business.contact?.phone || ""
+            }" />
+          </div>
+          <div class="form-group">
+            <label>Contact Email</label>
+            <input type="text" id="biz-email" value="${
+              business.contact?.email || ""
+            }" />
+          </div>
+          <div class="form-group">
+            <label>Weekday Hours</label>
+            <input type="text" id="biz-weekdays" value="${
+              business.hours?.weekdays || ""
+            }" />
+          </div>
+          <div class="form-group">
+            <label>Saturday Hours</label>
+            <input type="text" id="biz-saturday" value="${
+              business.hours?.saturday || ""
+            }" />
+          </div>
+          <div class="form-group">
+            <label>Sunday Hours</label>
+            <input type="text" id="biz-sunday" value="${
+              business.hours?.sunday || ""
+            }" />
+          </div>
+          <button class="save-btn" onclick="saveFullSettings()">Save All Settings</button>
+          <div class="success-msg" id="full-save-success">✅ All settings saved!</div>
+        </div>
+      `;
+      }
+
+      async function saveSettings() {
+        const greeting = document.getElementById("greeting").value;
+        const location = document.getElementById("location").value;
+
+        const res = await fetch("/dashboard/business", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ greeting, location }),
+        });
+
+        const data = await res.json();
+        if (data.success) {
+          const msg = document.getElementById("save-success");
+          msg.style.display = "block";
+          setTimeout(() => (msg.style.display = "none"), 3000);
+        }
+      }
+
+      async function saveFullSettings() {
+        const updates = {
+          name: document.getElementById("biz-name").value,
+          contact: {
+            phone: document.getElementById("biz-phone").value,
+            email: document.getElementById("biz-email").value,
+          },
+          hours: {
+            weekdays: document.getElementById("biz-weekdays").value,
+            saturday: document.getElementById("biz-saturday").value,
+            sunday: document.getElementById("biz-sunday").value,
+          },
+        };
+
+        const res = await fetch("/dashboard/business", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(updates),
+        });
+
+        const data = await res.json();
+        if (data.success) {
+          const msg = document.getElementById("full-save-success");
+          msg.style.display = "block";
+          setTimeout(() => (msg.style.display = "none"), 3000);
+        }
+      }
+
+      async function logout() {
+        await fetch("/auth/logout", { method: "POST" });
+        window.location.href = "/";
+      }
+
+      loadDashboard();
+    </script>
+  </body>
+</html>
