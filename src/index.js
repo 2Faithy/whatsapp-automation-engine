@@ -1,7 +1,9 @@
 const express = require("express");
+const fs = require("fs");
 const { PORT } = require("./config/env");
 const webhookRoute = require("./routes/webhook");
-const fs = require("fs");
+const { connectDB } = require("./database/connection");
+
 function log(msg) {
   const line = new Date().toISOString() + " " + msg + "\n";
   process.stdout.write(line);
@@ -22,10 +24,13 @@ app.post("/test", (req, res) => {
   res.send("Test OK");
 });
 
-app.listen(PORT, "0.0.0.0", () => {
-  console.log("Server running on port " + PORT);
+// Connect to database then start server
+connectDB().then(() => {
+  app.listen(PORT, "0.0.0.0", () => {
+    log("Server running on port " + PORT);
+  });
 });
 
 setInterval(() => {
-  console.log("Server alive... " + new Date().toLocaleTimeString());
+  log("Server alive... " + new Date().toLocaleTimeString());
 }, 30000);
