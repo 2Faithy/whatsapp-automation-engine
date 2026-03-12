@@ -1,0 +1,70 @@
+{
+    "businesses": [
+      {
+        "id": "biz_001",
+        "name": "Mama Tope Kitchen",
+        "whatsapp_number": "2348012345678",
+        "greeting": "Welcome to Mama Tope Kitchen! 🍽️ How can I help you today?",
+        "pricing": [
+          { "item": "Jollof Rice", "price": "₦1,500" },
+          { "item": "Fried Rice", "price": "₦1,500" },
+          { "item": "Egusi Soup", "price": "₦2,000" },
+          { "item": "Pounded Yam", "price": "₦500" }
+        ],
+        "hours": {
+          "weekdays": "8am - 9pm",
+          "saturday": "9am - 10pm",
+          "sunday": "12pm - 8pm"
+        },
+        "location": "15 Awolowo Road, Ikeja, Lagos",
+        "contact": {
+          "phone": "+234 801 234 5678",
+          "email": "momatope@gmail.com"
+        },
+        "faqs": [
+          {
+            "question": "do you deliver",
+            "answer": "Yes! We deliver within Ikeja. Delivery fee is ₦500. Order minimum is ₦3,000."
+          },
+          {
+            "question": "how long does delivery take",
+            "answer": "Delivery takes 30-45 minutes within Ikeja."
+          }
+        ],
+        "fallback": "Sorry I did not understand that. Please type:\n\n1. Menu & Prices\n2. Opening Hours\n3. Location\n4. Delivery Info\n5. Talk to us"
+      },
+      {
+        "id": "biz_002",
+        "name": "QuickFix Phone Repairs",
+        "whatsapp_number": "2348098765432",
+        "greeting": "Hi! Welcome to QuickFix Phone Repairs 📱 How can we help?",
+        "pricing": [
+          { "item": "Screen Replacement", "price": "₦8,000 - ₦25,000" },
+          { "item": "Battery Replacement", "price": "₦3,500" },
+          { "item": "Charging Port Fix", "price": "₦2,500" },
+          { "item": "Software Repair", "price": "₦2,000" }
+        ],
+        "hours": {
+          "weekdays": "9am - 6pm",
+          "saturday": "10am - 4pm",
+          "sunday": "Closed"
+        },
+        "location": "Shop 5, Computer Village, Ikeja, Lagos",
+        "contact": {
+          "phone": "+234 809 876 5432",
+          "email": "quickfix@gmail.com"
+        },
+        "faqs": [
+          {
+            "question": "how long does repair take",
+            "answer": "Most repairs take 1-2 hours. Major repairs may take 24 hours."
+          },
+          {
+            "question": "do you have warranty",
+            "answer": "Yes! All repairs come with a 30-day warranty."
+          }
+        ],
+        "fallback": "I did not catch that. Please type:\n\n1. Prices\n2. Opening Hours\n3. Location\n4. Repair Time\n5. Talk to a technician"
+      }
+    ]
+  }
