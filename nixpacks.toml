@@ -1,0 +1,8 @@
+[phases.setup]
+nixPkgs = ["nodejs", "chromium", "glib", "nss", "nspr", "atk", "cups", "dbus", "expat", "libdrm", "libxkbcommon", "mesa", "x11", "xfixes", "xrandr", "xcomposite", "xdamage", "xext"]
+
+[phases.install]
+cmds = ["npm install"]
+
+[start]
+cmd = "node src/index.js"
