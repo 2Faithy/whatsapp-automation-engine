@@ -49,7 +49,7 @@ app.post("/test-register", (req, res) => {
 });
 
 // Static files AFTER routes
-app.use(express.static(path.join(__dirname, "../public")));
+app.use(express.static(path.join(__dirname, "../public"), { index: false }));
 
 // Pages
 app.get("/", (req, res) => {
