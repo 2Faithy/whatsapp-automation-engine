@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WA Automation — WhatsApp Customer Service on Autopilot</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      :root {
+        --green: #1d9e75;
+        --green-dark: #0f6e56;
+        --green-light: #e1f5ee;
+        --bg: #fafaf8;
+        --surface: #ffffff;
+        --border: rgba(0, 0, 0, 0.08);
+        --text: #1a1a1a;
+        --text2: #666;
+        --text3: #999;
+      }
+      body {
+        font-family: system-ui, -apple-system, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.6;
+      }
+
+      /* Nav */
+      nav {
+        background: var(--surface);
+        border-bottom: 0.5px solid var(--border);
+        padding: 0 40px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+      .nav-brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .nav-icon {
+        width: 34px;
+        height: 34px;
+        background: var(--green);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .nav-icon svg {
+        width: 18px;
+        height: 18px;
+        fill: white;
+      }
+      .brand-name {
+        font-size: 16px;
+        font-weight: 500;
+      }
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+      }
+      .nav-links a {
+        font-size: 14px;
+        color: var(--text2);
+        text-decoration: none;
+      }
+      .nav-links a:hover {
+        color: var(--text);
+      }
+      .nav-cta {
+        background: var(--green);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 8px 20px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        text-decoration: none;
+      }
+      .nav-cta:hover {
+        background: var(--green-dark);
+      }
+
+      /* Hero */
+      .hero {
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 80px 40px 60px;
+        text-align: center;
+      }
+      .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--green-light);
+        color: var(--green-dark);
+        border-radius: 20px;
+        padding: 6px 14px;
+        font-size: 13px;
+        font-weight: 500;
+        margin-bottom: 28px;
+      }
+      .hero-badge-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--green);
+      }
+      .hero h1 {
+        font-size: 48px;
+        font-weight: 500;
+        line-height: 1.15;
+        color: var(--text);
+        margin-bottom: 20px;
+        letter-spacing: -0.5px;
+      }
+      .hero h1 span {
+        color: var(--green);
+      }
+      .hero p {
+        font-size: 18px;
+        color: var(--text2);
+        margin-bottom: 36px;
+        max-width: 540px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .hero-btns {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .btn-primary {
+        background: var(--green);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 14px 28px;
+        font-size: 15px;
+        font-weight: 500;
+        cursor: pointer;
+        text-decoration: none;
+      }
+      .btn-primary:hover {
+        background: var(--green-dark);
+      }
+      .btn-secondary {
+        background: var(--surface);
+        color: var(--text);
+        border: 0.5px solid var(--border);
+        border-radius: 8px;
+        padding: 14px 28px;
+        font-size: 15px;
+        cursor: pointer;
+        text-decoration: none;
+      }
+      .btn-secondary:hover {
+        background: var(--bg);
+      }
+      .hero-note {
+        margin-top: 16px;
+        font-size: 13px;
+        color: var(--text3);
+      }
+
+      /* Chat demo */
+      .demo {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0 40px 80px;
+      }
+      .demo-wrap {
+        background: var(--surface);
+        border: 0.5px solid var(--border);
+        border-radius: 16px;
+        padding: 32px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 32px;
+        align-items: center;
+      }
+      .demo-label {
+        font-size: 12px;
+        color: var(--text3);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 16px;
+      }
+      .chat {
+        background: #f0f0f0;
+        border-radius: 12px;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .chat-msg {
+        max-width: 80%;
+      }
+      .chat-msg.user {
+        align-self: flex-end;
+      }
+      .bubble {
+        padding: 10px 14px;
+        border-radius: 12px;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+      .bubble.user {
+        background: #dcf8c6;
+        color: #1a1a1a;
+        border-bottom-right-radius: 4px;
+      }
+      .bubble.bot {
+        background: white;
+        color: #1a1a1a;
+        border-bottom-left-radius: 4px;
+      }
+      .chat-time {
+        font-size: 11px;
+        color: #999;
+        margin-top: 3px;
+        text-align: right;
+      }
+      .demo-text h2 {
+        font-size: 24px;
+        font-weight: 500;
+        margin-bottom: 12px;
+      }
+      .demo-text p {
+        font-size: 15px;
+        color: var(--text2);
+        line-height: 1.7;
+      }
+      .demo-points {
+        margin-top: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .demo-point {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        font-size: 14px;
+        color: var(--text2);
+      }
+      .check {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: var(--green-light);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
+      .check svg {
+        width: 10px;
+        height: 10px;
+        fill: var(--green);
+      }
+
+      /* How it works */
+      .section {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 60px 40px;
+      }
+      .section-label {
+        font-size: 12px;
+        color: var(--green);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 12px;
+        font-weight: 500;
+      }
+      .section h2 {
+        font-size: 32px;
+        font-weight: 500;
+        margin-bottom: 48px;
+      }
+      .steps {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+      }
+      .step {
+        padding: 24px;
+        background: var(--surface);
+        border: 0.5px solid var(--border);
+        border-radius: 12px;
+      }
+      .step-num {
+        width: 32px;
+        height: 32px;
+        background: var(--green-light);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--green-dark);
+        margin-bottom: 16px;
+      }
+      .step h3 {
+        font-size: 16px;
+        font-weight: 500;
+        margin-bottom: 8px;
+      }
+      .step p {
+        font-size: 14px;
+        color: var(--text2);
+        line-height: 1.6;
+      }
+
+      /* Pricing */
+      .pricing {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 60px 40px;
+      }
+      .pricing h2 {
+        font-size: 32px;
+        font-weight: 500;
+        margin-bottom: 8px;
+      }
+      .pricing-sub {
+        font-size: 16px;
+        color: var(--text2);
+        margin-bottom: 48px;
+      }
+      .plans {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+      }
+      .plan {
+        background: var(--surface);
+        border: 0.5px solid var(--border);
+        border-radius: 12px;
+        padding: 28px;
+      }
+      .plan.featured {
+        border: 2px solid var(--green);
+      }
+      .plan-badge {
+        background: var(--green-light);
+        color: var(--green-dark);
+        font-size: 12px;
+        font-weight: 500;
+        padding: 3px 10px;
+        border-radius: 20px;
+        display: inline-block;
+        margin-bottom: 16px;
+      }
+      .plan h3 {
+        font-size: 18px;
+        font-weight: 500;
+        margin-bottom: 4px;
+      }
+      .plan-desc {
+        font-size: 13px;
+        color: var(--text2);
+        margin-bottom: 20px;
+      }
+      .plan-price {
+        font-size: 32px;
+        font-weight: 500;
+        margin-bottom: 4px;
+      }
+      .plan-price span {
+        font-size: 14px;
+        font-weight: 400;
+        color: var(--text2);
+      }
+      .plan-period {
+        font-size: 13px;
+        color: var(--text3);
+        margin-bottom: 24px;
+      }
+      .plan-features {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 28px;
+      }
+      .plan-features li {
+        font-size: 14px;
+        color: var(--text2);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .plan-features li::before {
+        content: "";
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--green);
+        flex-shrink: 0;
+      }
+      .plan-btn {
+        width: 100%;
+        padding: 12px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        text-align: center;
+        display: block;
+        text-decoration: none;
+      }
+      .plan-btn.primary {
+        background: var(--green);
+        color: white;
+        border: none;
+      }
+      .plan-btn.primary:hover {
+        background: var(--green-dark);
+      }
+      .plan-btn.outline {
+        background: none;
+        color: var(--text);
+        border: 0.5px solid var(--border);
+      }
+      .plan-btn.outline:hover {
+        background: var(--bg);
+      }
+
+      /* Testimonial */
+      .testimonials {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 60px 40px;
+      }
+      .testimonials h2 {
+        font-size: 32px;
+        font-weight: 500;
+        margin-bottom: 48px;
+      }
+      .testi-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+      }
+      .testi {
+        background: var(--surface);
+        border: 0.5px solid var(--border);
+        border-radius: 12px;
+        padding: 24px;
+      }
+      .testi-text {
+        font-size: 14px;
+        color: var(--text);
+        line-height: 1.7;
+        margin-bottom: 20px;
+      }
+      .testi-author {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .testi-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: var(--green-light);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--green-dark);
+      }
+      .testi-name {
+        font-size: 13px;
+        font-weight: 500;
+      }
+      .testi-biz {
+        font-size: 12px;
+        color: var(--text3);
+      }
+
+      /* CTA */
+      .cta {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 60px 40px;
+      }
+      .cta-box {
+        background: var(--green);
+        border-radius: 16px;
+        padding: 60px;
+        text-align: center;
+      }
+      .cta-box h2 {
+        font-size: 32px;
+        font-weight: 500;
+        color: white;
+        margin-bottom: 12px;
+      }
+      .cta-box p {
+        font-size: 16px;
+        color: rgba(255, 255, 255, 0.8);
+        margin-bottom: 32px;
+      }
+      .btn-white {
+        background: white;
+        color: var(--green-dark);
+        border: none;
+        border-radius: 8px;
+        padding: 14px 32px;
+        font-size: 15px;
+        font-weight: 500;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+      }
+      .btn-white:hover {
+        background: #f0f0f0;
+      }
+
+      /* Footer */
+      footer {
+        border-top: 0.5px solid var(--border);
+        padding: 32px 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 900px;
+        margin: 0 auto;
+      }
+      .footer-brand {
+        font-size: 14px;
+        font-weight: 500;
+      }
+      .footer-note {
+        font-size: 13px;
+        color: var(--text3);
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <div class="nav-brand">
+        <div class="nav-icon">
+          <svg viewBox="0 0 24 24">
+            <path
+              d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"
+            />
+          </svg>
+        </div>
+        <span class="brand-name">WA Automation</span>
+      </div>
+      <div class="nav-links">
+        <a href="#how">How it works</a>
+        <a href="#pricing">Pricing</a>
+        <a href="/login">Login</a>
+        <a href="/login" class="nav-cta">Get started</a>
+      </div>
+    </nav>
+
+    <div class="hero">
+      <div class="hero-badge">
+        <div class="hero-badge-dot"></div>
+        Now live for Nigerian businesses
+      </div>
+      <h1>Your WhatsApp,<br />on <span>autopilot</span></h1>
+      <p>
+        Let AI handle customer messages 24/7. Prices, hours, orders, FAQs —
+        answered instantly in English and Pidgin.
+      </p>
+      <div class="hero-btns">
+        <a href="/login" class="btn-primary">Start free today</a>
+        <a href="#how" class="btn-secondary">See how it works</a>
+      </div>
+      <div class="hero-note">
+        No credit card required &nbsp;·&nbsp; Setup in 5 minutes
+      </div>
+    </div>
+
+    <div class="demo">
+      <div class="demo-wrap">
+        <div>
+          <div class="demo-label">Live demo</div>
+          <div class="chat">
+            <div class="chat-msg user">
+              <div class="bubble user">hello</div>
+              <div class="chat-time">09:20</div>
+            </div>
+            <div class="chat-msg">
+              <div class="bubble bot">
+                Welcome to Mama Tope Kitchen! How can I help you today?
+              </div>
+              <div class="chat-time">09:20</div>
+            </div>
+            <div class="chat-msg user">
+              <div class="bubble user">how much is jollof rice</div>
+              <div class="chat-time">09:21</div>
+            </div>
+            <div class="chat-msg">
+              <div class="bubble bot">
+                Here are our prices:<br />• Jollof Rice: ₦1,500<br />• Fried
+                Rice: ₦1,500<br />• Egusi Soup: ₦2,000<br />• Pounded Yam: ₦500
+              </div>
+              <div class="chat-time">09:21</div>
+            </div>
+            <div class="chat-msg user">
+              <div class="bubble user">una dey open now</div>
+              <div class="chat-time">09:22</div>
+            </div>
+            <div class="chat-msg">
+              <div class="bubble bot">
+                We are open Mon–Fri 8am–9pm, Sat 9am–10pm, Sun 12pm–8pm
+              </div>
+              <div class="chat-time">09:22</div>
+            </div>
+          </div>
+        </div>
+        <div class="demo-text">
+          <h2>Replies in seconds. Not hours.</h2>
+          <p>
+            Your customers get instant answers any time of day — even at 2am —
+            without you lifting a finger.
+          </p>
+          <div class="demo-points">
+            <div class="demo-point">
+              <div class="check">
+                <svg viewBox="0 0 10 10"><path d="M2 5l2.5 2.5L8 3" /></svg>
+              </div>
+              Understands English and Pidgin
+            </div>
+            <div class="demo-point">
+              <div class="check">
+                <svg viewBox="0 0 10 10"><path d="M2 5l2.5 2.5L8 3" /></svg>
+              </div>
+              Knows your prices, hours, location
+            </div>
+            <div class="demo-point">
+              <div class="check">
+                <svg viewBox="0 0 10 10"><path d="M2 5l2.5 2.5L8 3" /></svg>
+              </div>
+              Saves every conversation for you
+            </div>
+            <div class="demo-point">
+              <div class="check">
+                <svg viewBox="0 0 10 10"><path d="M2 5l2.5 2.5L8 3" /></svg>
+              </div>
+              No coding or tech skills needed
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section" id="how">
+      <div class="section-label">How it works</div>
+      <h2>Set up in 3 simple steps</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <h3>Create your account</h3>
+          <p>
+            Sign up and fill in your business details — name, prices, opening
+            hours, location and FAQs.
+          </p>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <h3>Connect WhatsApp</h3>
+          <p>
+            Link your WhatsApp Business number to our system in one click. No
+            technical skill needed.
+          </p>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <h3>Watch it work</h3>
+          <p>
+            Your AI bot starts replying customers instantly. View all
+            conversations from your dashboard.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="pricing" id="pricing">
+      <h2>Simple, honest pricing</h2>
+      <p class="pricing-sub">
+        Pick a plan that fits your business. Cancel anytime.
+      </p>
+      <div class="plans">
+        <div class="plan">
+          <h3>Starter</h3>
+          <p class="plan-desc">
+            Perfect for small businesses just getting started
+          </p>
+          <div class="plan-price">₦25,000<span>/mo</span></div>
+          <div class="plan-period">~$15/month</div>
+          <ul class="plan-features">
+            <li>Up to 500 messages/month</li>
+            <li>1 WhatsApp number</li>
+            <li>Basic AI replies</li>
+            <li>Conversation history</li>
+            <li>Dashboard access</li>
+          </ul>
+          <a href="/login" class="plan-btn outline">Get started</a>
+        </div>
+        <div class="plan featured">
+          <div class="plan-badge">Most popular</div>
+          <h3>Business</h3>
+          <p class="plan-desc">For growing businesses with more customers</p>
+          <div class="plan-price">₦60,000<span>/mo</span></div>
+          <div class="plan-period">~$36/month</div>
+          <ul class="plan-features">
+            <li>Up to 2,000 messages/month</li>
+            <li>1 WhatsApp number</li>
+            <li>Smart AI + Pidgin support</li>
+            <li>FAQ editor</li>
+            <li>Pricing & hours editor</li>
+            <li>Analytics dashboard</li>
+          </ul>
+          <a href="/login" class="plan-btn primary">Get started</a>
+        </div>
+        <div class="plan">
+          <h3>Enterprise</h3>
+          <p class="plan-desc">For large businesses and multiple locations</p>
+          <div class="plan-price">₦150,000<span>/mo</span></div>
+          <div class="plan-period">~$90/month</div>
+          <ul class="plan-features">
+            <li>Unlimited messages</li>
+            <li>Multiple WhatsApp numbers</li>
+            <li>Priority support</li>
+            <li>Custom AI training</li>
+            <li>Team access</li>
+            <li>API access</li>
+          </ul>
+          <a href="/login" class="plan-btn outline">Contact us</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="testimonials">
+      <h2>Businesses love it</h2>
+      <div class="testi-grid">
+        <div class="testi">
+          <div class="testi-text">
+            "Before this, I was spending 3 hours every day just answering the
+            same WhatsApp questions. Now the bot handles everything and I focus
+            on cooking."
+          </div>
+          <div class="testi-author">
+            <div class="testi-avatar">AT</div>
+            <div>
+              <div class="testi-name">Amaka Tope</div>
+              <div class="testi-biz">Mama Tope Kitchen, Lagos</div>
+            </div>
+          </div>
+        </div>
+        <div class="testi">
+          <div class="testi-text">
+            "My customers get replies at 3am when I'm sleeping. My sales went up
+            because nobody is waiting anymore. Best investment I made this
+            year."
+          </div>
+          <div class="testi-author">
+            <div class="testi-avatar">KA</div>
+            <div>
+              <div class="testi-name">Kunle Adewale</div>
+              <div class="testi-biz">QuickFix Repairs, Ikeja</div>
+            </div>
+          </div>
+        </div>
+        <div class="testi">
+          <div class="testi-text">
+            "It even understands when my customers write in Pidgin. Setup took
+            less than 10 minutes. I recommend it to every business owner I
+            know."
+          </div>
+          <div class="testi-author">
+            <div class="testi-avatar">NB</div>
+            <div>
+              <div class="testi-name">Ngozi Balogun</div>
+              <div class="testi-biz">NB Fashion, Abuja</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cta">
+      <div class="cta-box">
+        <h2>Ready to automate your WhatsApp?</h2>
+        <p>
+          Join hundreds of Nigerian businesses saving time and making more
+          sales.
+        </p>
+        <a href="/login" class="btn-white">Get started free today</a>
+      </div>
+    </div>
+
+    <footer>
+      <div class="footer-brand">WA Automation</div>
+      <div class="footer-note">
+        Built in Lagos, Nigeria. Serving businesses worldwide.
+      </div>
+    </footer>
+  </body>
+</html>
