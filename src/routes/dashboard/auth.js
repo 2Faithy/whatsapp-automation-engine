@@ -6,13 +6,12 @@ const mongoose = require("mongoose");
 
 // Register
 router.post("/register", (req, res) => {
-  console.log("Register route hit");
-  const { name, email, password, business_name, whatsapp_number } = req.body;
-  console.log("Body received:", name, email, business_name);
-  const cleanPhone = whatsapp_number.replace(/\+/g, "").trim();
+  const { name, email, password, business_name, whatsapp_number, phone } =
+    req.body;
+  const phoneNumber = whatsapp_number || phone || "";
+  const cleanPhone = phoneNumber.replace(/\+/g, "").trim();
+
   const db = mongoose.connection.db;
-  const bcryptLib = require("bcryptjs");
-  const jwtLib = require("jsonwebtoken");
 
   db.collection("users")
     .findOne({ email })
@@ -46,11 +45,12 @@ router.post("/register", (req, res) => {
             sunday: "Closed",
           },
           location: "Please update your location",
-          contact: { phone: whatsapp_number, email: email },
+          contact: { phone: phoneNumber, email: email },
           faqs: [],
           fallback:
             "I did not understand that. Please type:\n1. Prices\n2. Hours\n3. Location\n4. Contact",
           active: true,
+          onboarding_complete: false,
           createdAt: new Date(),
           updatedAt: new Date(),
         })
@@ -58,7 +58,7 @@ router.post("/register", (req, res) => {
     })
     .then((businessId) => {
       if (!businessId) return;
-      return bcryptLib.hash(password, 10).then((hashedPassword) => {
+      return bcrypt.hash(password, 10).then((hashedPassword) => {
         return db
           .collection("users")
           .insertOne({
@@ -72,8 +72,13 @@ router.post("/register", (req, res) => {
             updatedAt: new Date(),
           })
           .then((userResult) => {
-            const token = jwtLib.sign(
-              { id: userResult.insertedId, email, business_id: businessId },
+            const token = jwt.sign(
+              {
+                id: userResult.insertedId,
+                email,
+                business_id: businessId,
+                name,
+              },
               process.env.JWT_SECRET,
               { expiresIn: "7d" }
             );
@@ -81,7 +86,7 @@ router.post("/register", (req, res) => {
               httpOnly: true,
               maxAge: 7 * 24 * 60 * 60 * 1000,
             });
-            return res.json({ success: true, redirect: "/dashboard" });
+            return res.json({ success: true, redirect: "/onboarding" });
           });
       });
     })
@@ -92,42 +97,42 @@ router.post("/register", (req, res) => {
 });
 
 // Login
-router.post("/login", async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    const db = mongoose.connection.db;
+router.post("/login", (req, res) => {
+  const { email, password } = req.body;
+  const db = mongoose.connection.db;
 
-    const user = await db.collection("users").findOne({ email });
-    if (!user) {
-      return res.status(400).json({ error: "Invalid email or password" });
-    }
-
-    const valid = await bcrypt.compare(password, user.password);
-    if (!valid) {
-      return res.status(400).json({ error: "Invalid email or password" });
-    }
-
-    const token = jwt.sign(
-      { id: user._id, email: user.email, business_id: user.business_id },
-      process.env.JWT_SECRET,
-      { expiresIn: "7d" }
-    );
-
-    res.cookie("token", token, {
-      httpOnly: true,
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
-
-    return res.json({ success: true, redirect: "/dashboard" });
-  } catch (err) {
-    return res.status(500).json({ error: err.message });
-  }
+  db.collection("users")
+    .findOne({ email })
+    .then((user) => {
+      if (!user)
+        return res.status(400).json({ error: "Invalid email or password" });
+      return bcrypt.compare(password, user.password).then((valid) => {
+        if (!valid)
+          return res.status(400).json({ error: "Invalid email or password" });
+        const token = jwt.sign(
+          {
+            id: user._id,
+            email: user.email,
+            business_id: user.business_id,
+            name: user.name,
+          },
+          process.env.JWT_SECRET,
+          { expiresIn: "7d" }
+        );
+        res.cookie("token", token, {
+          httpOnly: true,
+          maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
+        return res.json({ success: true, redirect: "/dashboard" });
+      });
+    })
+    .catch((err) => res.status(500).json({ error: err.message }));
 });
 
 // Logout
 router.post("/logout", (req, res) => {
   res.clearCookie("token");
-  return res.json({ success: true, redirect: "/" });
+  return res.json({ success: true });
 });
 
 module.exports = router;
