@@ -46,15 +46,24 @@ function formatContact(business) {
 
 // Check FAQs for a match
 function checkFAQ(business, text) {
-  const cleaned = text.toLowerCase();
+  if (!business.faqs || business.faqs.length === 0) return null;
+  const cleaned = text.toLowerCase().trim();
+
   const match = business.faqs.find((faq) => {
-    const question = faq.question.toLowerCase();
-    const questionWords = question.split(" ").filter((w) => w.length > 3);
+    if (!faq.question) return false;
+    const question = faq.question.toLowerCase().trim();
+
+    // Exact match
+    if (cleaned.includes(question)) return true;
+
+    // Match if 2+ meaningful words match
+    const questionWords = question.split(" ").filter((w) => w.length > 2);
     const matchCount = questionWords.filter((word) =>
       cleaned.includes(word)
     ).length;
-    return matchCount >= 2 || cleaned.includes(question);
+    return matchCount >= 2;
   });
+
   return match ? match.answer : null;
 }
 
