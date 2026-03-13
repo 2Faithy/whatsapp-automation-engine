@@ -5,6 +5,7 @@ const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const { PORT } = require("./config/env");
 const webhookRoute = require("./routes/webhook");
+const twilioWebhookRoute = require("./routes/twilioWebhook");
 const authRoute = require("./routes/dashboard/auth");
 const dashboardRoute = require("./routes/dashboard/index");
 const { connectDB } = require("./database/connection");
@@ -23,6 +24,7 @@ app.use(cors());
 
 // API Routes FIRST — before static files
 app.use("/webhook", webhookRoute);
+app.use("/webhook/twilio", twilioWebhookRoute);
 app.use("/auth", authRoute);
 app.use("/dashboard", dashboardRoute);
 
