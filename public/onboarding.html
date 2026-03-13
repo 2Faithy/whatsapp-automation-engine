@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Setup Your Bot — WA Automation</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: system-ui, sans-serif;
+        background: #f5f5f3;
+        min-height: 100vh;
+      }
+      .nav {
+        background: white;
+        border-bottom: 0.5px solid rgba(0, 0, 0, 0.08);
+        padding: 0 24px;
+        height: 56px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .logo-icon {
+        width: 30px;
+        height: 30px;
+        background: #1d9e75;
+        border-radius: 7px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .logo-icon svg {
+        width: 16px;
+        height: 16px;
+        fill: white;
+      }
+      .logo-text {
+        font-size: 15px;
+        font-weight: 500;
+      }
+      .main {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 40px 24px;
+      }
+      .progress {
+        display: flex;
+        align-items: center;
+        gap: 0;
+        margin-bottom: 40px;
+      }
+      .step-dot {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        font-weight: 500;
+        flex-shrink: 0;
+        border: 2px solid #e0e0e0;
+        color: #999;
+        background: white;
+      }
+      .step-dot.active {
+        border-color: #1d9e75;
+        color: #1d9e75;
+      }
+      .step-dot.done {
+        border-color: #1d9e75;
+        background: #1d9e75;
+        color: white;
+      }
+      .step-line {
+        flex: 1;
+        height: 2px;
+        background: #e0e0e0;
+      }
+      .step-line.done {
+        background: #1d9e75;
+      }
+      .card {
+        background: white;
+        border-radius: 16px;
+        border: 0.5px solid rgba(0, 0, 0, 0.08);
+        padding: 32px;
+      }
+      .card h2 {
+        font-size: 22px;
+        font-weight: 500;
+        margin-bottom: 8px;
+      }
+      .card p {
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 28px;
+        line-height: 1.6;
+      }
+      .form-group {
+        margin-bottom: 16px;
+      }
+      label {
+        display: block;
+        font-size: 12px;
+        color: #666;
+        margin-bottom: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      input,
+      textarea {
+        width: 100%;
+        padding: 10px 14px;
+        border: 0.5px solid rgba(0, 0, 0, 0.12);
+        border-radius: 8px;
+        font-size: 14px;
+        outline: none;
+        font-family: inherit;
+      }
+      input:focus,
+      textarea:focus {
+        border-color: #1d9e75;
+      }
+      textarea {
+        resize: vertical;
+        min-height: 80px;
+      }
+      .row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+      .btn {
+        padding: 12px 28px;
+        background: #1d9e75;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+      }
+      .btn:hover {
+        background: #0f6e56;
+      }
+      .btn-outline {
+        background: none;
+        color: #666;
+        border: 0.5px solid rgba(0, 0, 0, 0.12);
+      }
+      .btn-outline:hover {
+        background: #f5f5f3;
+      }
+      .btns {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 24px;
+      }
+      .pricing-row {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+      .pricing-row input {
+        flex: 1;
+      }
+      .del-btn {
+        background: none;
+        border: none;
+        color: #999;
+        cursor: pointer;
+        font-size: 18px;
+        padding: 0 4px;
+      }
+      .add-btn {
+        background: none;
+        border: 0.5px dashed rgba(0, 0, 0, 0.15);
+        border-radius: 8px;
+        padding: 8px;
+        width: 100%;
+        font-size: 13px;
+        color: #666;
+        cursor: pointer;
+        margin-top: 4px;
+      }
+      .add-btn:hover {
+        background: #f5f5f3;
+      }
+      .section-title {
+        font-size: 13px;
+        font-weight: 500;
+        color: #1a1a1a;
+        margin-bottom: 12px;
+        margin-top: 20px;
+      }
+
+      /* QR Step */
+      .qr-wrap {
+        text-align: center;
+        padding: 20px 0;
+      }
+      .qr-box {
+        background: #f5f5f3;
+        border-radius: 12px;
+        padding: 32px;
+        display: inline-block;
+        margin: 20px 0;
+      }
+      .qr-box img {
+        width: 200px;
+        height: 200px;
+      }
+      .qr-spinner {
+        width: 200px;
+        height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .spinner {
+        width: 32px;
+        height: 32px;
+        border: 3px solid #e0e0e0;
+        border-top-color: #1d9e75;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 500;
+      }
+      .status-badge.waiting {
+        background: #fff8e1;
+        color: #f59e0b;
+      }
+      .status-badge.connected {
+        background: #e1f5ee;
+        color: #0f6e56;
+      }
+      .status-badge.scanning {
+        background: #e8f0fe;
+        color: #1a73e8;
+      }
+      .qr-steps {
+        text-align: left;
+        margin-top: 20px;
+      }
+      .qr-step {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        margin-bottom: 12px;
+        font-size: 14px;
+        color: #666;
+      }
+      .qr-step-num {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: #1d9e75;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 500;
+        flex-shrink: 0;
+      }
+      .success-icon {
+        width: 64px;
+        height: 64px;
+        background: #e1f5ee;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 16px;
+      }
+      .success-icon svg {
+        width: 32px;
+        height: 32px;
+        fill: #1d9e75;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="nav">
+      <div class="logo">
+        <div class="logo-icon">
+          <svg viewBox="0 0 24 24">
+            <path
+              d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"
+            />
+          </svg>
+        </div>
+        <span class="logo-text">WA Automation</span>
+      </div>
+      <span style="font-size: 13px; color: #999">Setup wizard</span>
+    </div>
+
+    <div class="main">
+      <!-- Progress bar -->
+      <div class="progress">
+        <div class="step-dot active" id="dot-1">1</div>
+        <div class="step-line" id="line-1"></div>
+        <div class="step-dot" id="dot-2">2</div>
+        <div class="step-line" id="line-2"></div>
+        <div class="step-dot" id="dot-3">3</div>
+        <div class="step-line" id="line-3"></div>
+        <div class="step-dot" id="dot-4">4</div>
+      </div>
+
+      <!-- Step 1: Business Details -->
+      <div class="card" id="step-1">
+        <h2>Tell us about your business</h2>
+        <p>
+          This information helps your bot answer customer questions correctly.
+        </p>
+        <div class="form-group">
+          <label>Business description</label>
+          <textarea
+            id="s1-description"
+            placeholder="e.g. We are a Nigerian restaurant serving authentic Yoruba dishes in Ikeja, Lagos"
+          ></textarea>
+        </div>
+        <div class="row">
+          <div class="form-group">
+            <label>City</label>
+            <input id="s1-city" placeholder="Lagos" />
+          </div>
+          <div class="form-group">
+            <label>State</label>
+            <input id="s1-state" placeholder="Lagos State" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Full address</label>
+          <input id="s1-address" placeholder="15 Awolowo Road, Ikeja" />
+        </div>
+        <div class="form-group">
+          <label
+            >Business WhatsApp number (your customers will message this)</label
+          >
+          <input id="s1-waphone" placeholder="+2348012345678" />
+        </div>
+        <div class="btns">
+          <div></div>
+          <button class="btn" onclick="goStep(2)">Next →</button>
+        </div>
+      </div>
+
+      <!-- Step 2: Pricing -->
+      <div class="card" id="step-2" style="display: none">
+        <h2>Add your prices</h2>
+        <p>
+          When customers ask "how much", your bot will reply with these prices.
+        </p>
+        <div id="pricing-list">
+          <div class="pricing-row">
+            <input placeholder="Item name e.g. Jollof Rice" class="item-name" />
+            <input
+              placeholder="Price e.g. ₦1,500"
+              class="item-price"
+              style="max-width: 120px"
+            />
+            <button class="del-btn" onclick="this.parentElement.remove()">
+              ×
+            </button>
+          </div>
+        </div>
+        <button class="add-btn" onclick="addPrice()">+ Add item</button>
+        <div class="btns">
+          <button class="btn btn-outline" onclick="goStep(1)">← Back</button>
+          <button class="btn" onclick="goStep(3)">Next →</button>
+        </div>
+      </div>
+
+      <!-- Step 3: Hours & FAQs -->
+      <div class="card" id="step-3" style="display: none">
+        <h2>Hours & FAQs</h2>
+        <p>Set your opening hours and answer common customer questions.</p>
+        <div class="section-title">Opening hours</div>
+        <div class="row">
+          <div class="form-group">
+            <label>Weekdays</label>
+            <input id="s3-weekdays" placeholder="8am - 9pm" />
+          </div>
+          <div class="form-group">
+            <label>Saturday</label>
+            <input id="s3-saturday" placeholder="9am - 10pm" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Sunday</label>
+          <input id="s3-sunday" placeholder="Closed or 12pm - 6pm" />
+        </div>
+        <div class="section-title">FAQs</div>
+        <div id="faq-list">
+          <div class="form-group">
+            <label>Question</label>
+            <input class="faq-q" placeholder="e.g. Do you deliver?" />
+          </div>
+          <div class="form-group">
+            <label>Answer</label>
+            <textarea
+              class="faq-a"
+              placeholder="e.g. Yes! We deliver within Lagos for ₦500"
+            ></textarea>
+          </div>
+        </div>
+        <button class="add-btn" onclick="addFaq()">+ Add FAQ</button>
+        <div class="btns">
+          <button class="btn btn-outline" onclick="goStep(2)">← Back</button>
+          <button class="btn" onclick="saveAndContinue()">
+            Save & Connect WhatsApp →
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 4: Connect WhatsApp -->
+      <div class="card" id="step-4" style="display: none">
+        <h2>Connect your WhatsApp</h2>
+        <p>
+          Scan the QR code below with your WhatsApp Business number to activate
+          your bot.
+        </p>
+
+        <div class="qr-wrap">
+          <div id="status-area">
+            <span class="status-badge waiting" id="status-badge"
+              >Waiting to start...</span
+            >
+          </div>
+
+          <div class="qr-box" id="qr-box">
+            <div class="qr-spinner" id="qr-spinner" style="display: none">
+              <div class="spinner"></div>
+              <span style="font-size: 13px; color: #666"
+                >Generating QR code...</span
+              >
+            </div>
+            <img id="qr-img" style="display: none" />
+            <div id="connected-msg" style="display: none; padding: 20px">
+              <div class="success-icon">
+                <svg viewBox="0 0 24 24">
+                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                </svg>
+              </div>
+              <div
+                style="
+                  font-size: 18px;
+                  font-weight: 500;
+                  color: #1a1a1a;
+                  margin-bottom: 8px;
+                "
+              >
+                Connected!
+              </div>
+              <div style="font-size: 14px; color: #666">
+                Your bot is now live on your WhatsApp number
+              </div>
+            </div>
+          </div>
+
+          <div class="qr-steps" id="qr-instructions">
+            <div class="qr-step">
+              <div class="qr-step-num">1</div>
+              Open WhatsApp on your phone
+            </div>
+            <div class="qr-step">
+              <div class="qr-step-num">2</div>
+              Tap Menu (⋮) → Linked Devices
+            </div>
+            <div class="qr-step">
+              <div class="qr-step-num">3</div>
+              Tap "Link a Device"
+            </div>
+            <div class="qr-step">
+              <div class="qr-step-num">4</div>
+              Point your camera at the QR code
+            </div>
+          </div>
+        </div>
+
+        <div class="btns">
+          <button class="btn btn-outline" onclick="goStep(3)">← Back</button>
+          <button class="btn" id="connect-btn" onclick="startConnection()">
+            Generate QR Code
+          </button>
+          <button
+            class="btn"
+            id="dashboard-btn"
+            style="display: none"
+            onclick="window.location.href='/dashboard'"
+          >
+            Go to Dashboard →
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let currentStep = 1;
+      let pollingInterval = null;
+
+      function goStep(n) {
+        document.getElementById("step-" + currentStep).style.display = "none";
+        document.getElementById("step-" + n).style.display = "block";
+
+        // Update progress dots
+        for (let i = 1; i <= 4; i++) {
+          const dot = document.getElementById("dot-" + i);
+          if (i < n) {
+            dot.className = "step-dot done";
+            dot.innerHTML = "✓";
+          } else if (i === n) {
+            dot.className = "step-dot active";
+            dot.textContent = i;
+          } else {
+            dot.className = "step-dot";
+            dot.textContent = i;
+          }
+        }
+        for (let i = 1; i <= 3; i++) {
+          document.getElementById("line-" + i).className =
+            "step-line" + (i < n ? " done" : "");
+        }
+        currentStep = n;
+      }
+
+      function addPrice() {
+        const list = document.getElementById("pricing-list");
+        const row = document.createElement("div");
+        row.className = "pricing-row";
+        row.innerHTML =
+          '<input placeholder="Item name" class="item-name" /><input placeholder="Price" class="item-price" style="max-width:120px;" /><button class="del-btn" onclick="this.parentElement.remove()">×</button>';
+        list.appendChild(row);
+      }
+
+      function addFaq() {
+        const list = document.getElementById("faq-list");
+        list.innerHTML +=
+          '<div class="form-group"><label>Question</label><input class="faq-q" placeholder="Your question" /></div><div class="form-group"><label>Answer</label><textarea class="faq-a" placeholder="Your answer"></textarea></div>';
+      }
+
+      async function saveAndContinue() {
+        const pricing = [];
+        document.querySelectorAll(".pricing-row").forEach((row) => {
+          const name = row.querySelector(".item-name")?.value?.trim();
+          const price = row.querySelector(".item-price")?.value?.trim();
+          if (name && price) pricing.push({ item: name, price });
+        });
+
+        const faqs = [];
+        const questions = document.querySelectorAll(".faq-q");
+        const answers = document.querySelectorAll(".faq-a");
+        questions.forEach((q, i) => {
+          if (q.value.trim() && answers[i]?.value?.trim()) {
+            faqs.push({
+              question: q.value.trim(),
+              answer: answers[i].value.trim(),
+            });
+          }
+        });
+
+        const updates = {
+          description: document.getElementById("s1-description").value,
+          location:
+            document.getElementById("s1-address").value +
+            ", " +
+            document.getElementById("s1-city").value,
+          whatsapp_number: document
+            .getElementById("s1-waphone")
+            .value.replace(/\+/g, "")
+            .trim(),
+          hours: {
+            weekdays: document.getElementById("s3-weekdays").value,
+            saturday: document.getElementById("s3-saturday").value,
+            sunday: document.getElementById("s3-sunday").value,
+          },
+          pricing,
+          faqs,
+          onboarding_complete: true,
+        };
+
+        try {
+          await fetch("/dashboard/business", {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(updates),
+          });
+          goStep(4);
+        } catch (err) {
+          alert("Error saving. Please try again.");
+        }
+      }
+
+      async function startConnection() {
+        document.getElementById("connect-btn").style.display = "none";
+        document.getElementById("qr-spinner").style.display = "flex";
+        document.getElementById("qr-img").style.display = "none";
+        document.getElementById("status-badge").className =
+          "status-badge scanning";
+        document.getElementById("status-badge").textContent =
+          "Generating QR code...";
+
+        try {
+          await fetch("/whatsapp/connect", { method: "POST" });
+          pollQR();
+        } catch (err) {
+          alert("Error starting connection. Please try again.");
+          document.getElementById("connect-btn").style.display = "block";
+        }
+      }
+
+      function pollQR() {
+        pollingInterval = setInterval(async () => {
+          try {
+            const res = await fetch("/whatsapp/qr");
+            const data = await res.json();
+
+            if (data.status === "connected") {
+              clearInterval(pollingInterval);
+              document.getElementById("qr-spinner").style.display = "none";
+              document.getElementById("qr-img").style.display = "none";
+              document.getElementById("qr-box").style.background = "#E1F5EE";
+              document.getElementById("connected-msg").style.display = "block";
+              document.getElementById("qr-instructions").style.display = "none";
+              document.getElementById("status-badge").className =
+                "status-badge connected";
+              document.getElementById("status-badge").textContent =
+                "✓ Connected!";
+              document.getElementById("dashboard-btn").style.display = "block";
+            } else if (data.qr) {
+              document.getElementById("qr-spinner").style.display = "none";
+              document.getElementById("qr-img").src = data.qr;
+              document.getElementById("qr-img").style.display = "block";
+              document.getElementById("status-badge").className =
+                "status-badge scanning";
+              document.getElementById("status-badge").textContent =
+                "Scan QR code with your WhatsApp";
+            }
+          } catch (err) {
+            console.error("Poll error:", err);
+          }
+        }, 2000);
+      }
+    </script>
+  </body>
+</html>

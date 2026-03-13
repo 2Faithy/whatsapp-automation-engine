@@ -8,6 +8,8 @@ const webhookRoute = require("./routes/webhook");
 const twilioWebhookRoute = require("./routes/twilioWebhook");
 const authRoute = require("./routes/dashboard/auth");
 const dashboardRoute = require("./routes/dashboard/index");
+const whatsappRoute = require("./routes/whatsapp");
+const adminRoute = require("./routes/admin");
 const { connectDB } = require("./database/connection");
 
 function log(msg) {
@@ -22,45 +24,23 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(cors());
 
-// API Routes FIRST — before static files
+// API Routes FIRST
 app.use("/webhook", webhookRoute);
 app.use("/webhook/twilio", twilioWebhookRoute);
 app.use("/auth", authRoute);
 app.use("/dashboard", dashboardRoute);
+app.use("/whatsapp", whatsappRoute);
+app.use("/admin", adminRoute);
 
-// Test route
-app.post("/test-register", (req, res) => {
-  const mongoose = require("mongoose");
-  const bcrypt = require("bcryptjs");
-  const db = mongoose.connection.db;
-  bcrypt
-    .hash("password123", 10)
-    .then((hash) =>
-      db.collection("testusers").insertOne({
-        name: "Faith",
-        email: "faith@test.com",
-        password: hash,
-      })
-    )
-    .then((r) => res.json({ success: true, id: r.insertedId }))
-    .catch((err) =>
-      res.status(500).json({ error: err.message, stack: err.stack })
-    );
-});
-
-// Static files AFTER routes
+// Static files
 app.use(express.static(path.join(__dirname, "../public"), { index: false }));
 
 // Pages
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "../public/landing.html"));
-});
-app.get("/login", (req, res) => {
-  res.sendFile(path.join(__dirname, "../public/index.html"));
-});
-app.get("/dashboard", (req, res) => {
-  res.sendFile(path.join(__dirname, "../public/dashboard.html"));
-});
+app.get("/", (req, res) => res.sendFile(path.join(__dirname, "../public/landing.html")));
+app.get("/login", (req, res) => res.sendFile(path.join(__dirname, "../public/index.html")));
+app.get("/dashboard", (req, res) => res.sendFile(path.join(__dirname, "../public/dashboard.html")));
+app.get("/onboarding", (req, res) => res.sendFile(path.join(__dirname, "../public/onboarding.html")));
+app.get("/admin", (req, res) => res.sendFile(path.join(__dirname, "../public/admin.html")));
 
 // Error handler
 app.use((err, req, res, next) => {
