@@ -89,19 +89,17 @@ async function createClient(businessId) {
       try {
         const db = mongoose.connection.db;
         const jid = sock.user?.id?.split(":")[0];
-        await db
-          .collection("businesses")
-          .updateOne(
-            { id: businessId },
-            {
-              $set: {
-                whatsapp_status: "connected",
-                whatsapp_number: jid,
-                active: true,
-                updatedAt: new Date(),
-              },
-            }
-          );
+        await db.collection("businesses").updateOne(
+          { id: businessId },
+          {
+            $set: {
+              whatsapp_status: "connected",
+              whatsapp_number: jid,
+              active: true,
+              updatedAt: new Date(),
+            },
+          }
+        );
         log("Business WhatsApp number: " + jid);
       } catch (err) {
         log("Connected update error: " + err.message);
