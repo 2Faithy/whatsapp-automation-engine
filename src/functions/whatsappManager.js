@@ -1,6 +1,12 @@
-const { Client, LocalAuth } = require("whatsapp-web.js");
+const {
+  default: makeWASocket,
+  useMultiFileAuthState,
+  DisconnectReason,
+  fetchLatestBaileysVersion,
+} = require("@whiskeysockets/baileys");
 const qrcode = require("qrcode");
 const fs = require("fs");
+const path = require("path");
 const mongoose = require("mongoose");
 
 function log(msg) {
@@ -9,147 +15,165 @@ function log(msg) {
   fs.appendFileSync("server.log", line);
 }
 
-// Store active clients per business
 const clients = {};
 const qrCodes = {};
 const statuses = {};
 
 async function createClient(businessId) {
-  if (clients[businessId]) {
-    log("Client already exists for business: " + businessId);
+  if (clients[businessId] && statuses[businessId] === "connected") {
+    log("Client already connected for: " + businessId);
     return;
   }
 
-  log("Creating WhatsApp client for business: " + businessId);
-
-  const client = new Client({
-    authStrategy: new LocalAuth({ clientId: businessId.toString() }),
-    puppeteer: {
-      headless: true,
-      args: [
-        "--no-sandbox",
-        "--disable-setuid-sandbox",
-        "--disable-dev-shm-usage",
-        "--disable-accelerated-2d-canvas",
-        "--no-first-run",
-        "--no-zygote",
-        "--single-process",
-        "--disable-gpu",
-      ],
-    },
-  });
-
-  clients[businessId] = client;
+  log("Creating Baileys client for business: " + businessId);
   statuses[businessId] = "initializing";
 
-  client.on("qr", async (qr) => {
-    log("QR received for business: " + businessId);
-    statuses[businessId] = "qr_ready";
-    try {
-      qrCodes[businessId] = await qrcode.toDataURL(qr);
-      // Save QR status to database
-      const db = mongoose.connection.db;
-      await db
-        .collection("businesses")
-        .updateOne(
-          { _id: new mongoose.Types.ObjectId(businessId) },
-          { $set: { whatsapp_status: "qr_ready", updatedAt: new Date() } }
-        );
-    } catch (err) {
-      log("QR error: " + err.message);
-    }
+  const authDir = path.join(
+    __dirname,
+    "../../.wa_sessions",
+    businessId.toString()
+  );
+  if (!fs.existsSync(authDir)) fs.mkdirSync(authDir, { recursive: true });
+
+  const { state, saveCreds } = await useMultiFileAuthState(authDir);
+  const { version } = await fetchLatestBaileysVersion();
+
+  const sock = makeWASocket({
+    version,
+    auth: state,
+    printQRInTerminal: false,
+    logger: {
+      level: "silent",
+      child: () => ({
+        level: "silent",
+        trace: () => {},
+        debug: () => {},
+        info: () => {},
+        warn: () => {},
+        error: () => {},
+        fatal: () => {},
+        child: () => ({}),
+      }),
+    },
+    browser: ["WA Automation", "Chrome", "1.0.0"],
   });
 
-  client.on("ready", async () => {
-    log("WhatsApp ready for business: " + businessId);
-    statuses[businessId] = "connected";
-    qrCodes[businessId] = null;
-    try {
-      const info = client.info;
-      const db = mongoose.connection.db;
-      await db.collection("businesses").updateOne(
-        { _id: new mongoose.Types.ObjectId(businessId) },
-        {
-          $set: {
-            whatsapp_status: "connected",
-            whatsapp_number: info.wid.user,
-            active: true,
-            updatedAt: new Date(),
-          },
-        }
+  clients[businessId] = sock;
+
+  sock.ev.on("creds.update", saveCreds);
+
+  sock.ev.on("connection.update", async (update) => {
+    const { connection, lastDisconnect, qr } = update;
+
+    if (qr) {
+      log("QR received for business: " + businessId);
+      statuses[businessId] = "qr_ready";
+      try {
+        qrCodes[businessId] = await qrcode.toDataURL(qr);
+        const db = mongoose.connection.db;
+        await db
+          .collection("businesses")
+          .updateOne(
+            { id: businessId },
+            { $set: { whatsapp_status: "qr_ready", updatedAt: new Date() } }
+          );
+      } catch (err) {
+        log("QR error: " + err.message);
+      }
+    }
+
+    if (connection === "open") {
+      log("WhatsApp connected for business: " + businessId);
+      statuses[businessId] = "connected";
+      qrCodes[businessId] = null;
+      try {
+        const db = mongoose.connection.db;
+        const jid = sock.user?.id?.split(":")[0];
+        await db
+          .collection("businesses")
+          .updateOne(
+            { id: businessId },
+            {
+              $set: {
+                whatsapp_status: "connected",
+                whatsapp_number: jid,
+                active: true,
+                updatedAt: new Date(),
+              },
+            }
+          );
+        log("Business WhatsApp number: " + jid);
+      } catch (err) {
+        log("Connected update error: " + err.message);
+      }
+    }
+
+    if (connection === "close") {
+      const shouldReconnect =
+        lastDisconnect?.error?.output?.statusCode !==
+        DisconnectReason.loggedOut;
+      log(
+        "Connection closed for " +
+          businessId +
+          " — reconnect: " +
+          shouldReconnect
       );
-      log("Business number saved: " + info.wid.user);
-    } catch (err) {
-      log("Ready error: " + err.message);
+      if (shouldReconnect) {
+        setTimeout(() => createClient(businessId), 5000);
+      } else {
+        statuses[businessId] = "disconnected";
+        delete clients[businessId];
+        const db = mongoose.connection.db;
+        db.collection("businesses")
+          .updateOne(
+            { id: businessId },
+            { $set: { whatsapp_status: "disconnected", active: false } }
+          )
+          .catch(() => {});
+      }
     }
   });
 
-  client.on("message", async (message) => {
-    try {
-      if (message.fromMe) return;
-      const from = message.from.replace("@c.us", "");
-      const text = message.body;
-      log("Message for business " + businessId + " from " + from + ": " + text);
+  sock.ev.on("messages.upsert", async ({ messages, type }) => {
+    if (type !== "notify") return;
+    for (const msg of messages) {
+      if (msg.key.fromMe) continue;
+      const from = msg.key.remoteJid?.replace("@s.whatsapp.net", "");
+      const text =
+        msg.message?.conversation ||
+        msg.message?.extendedTextMessage?.text ||
+        "";
+      if (!text || !from) continue;
 
-      const db = mongoose.connection.db;
-      const business = await db.collection("businesses").findOne({
-        _id: new mongoose.Types.ObjectId(businessId),
-      });
+      log("Message for " + businessId + " from " + from + ": " + text);
 
-      if (!business) return;
+      try {
+        const db = mongoose.connection.db;
+        const business = await db
+          .collection("businesses")
+          .findOne({ id: businessId });
+        if (!business) continue;
 
-      const { processMessage } = require("./aiBrain");
-      const { intent, reply } = processMessage(text, business);
+        const { processMessage } = require("./aiBrain");
+        const { intent, reply } = processMessage(text, business);
 
-      await db.collection("conversations").insertOne({
-        business_id: business._id,
-        customer_phone: from,
-        message: text,
-        intent,
-        reply,
-        direction: "incoming",
-        createdAt: new Date(),
-      });
+        await db.collection("conversations").insertOne({
+          business_id: business._id,
+          customer_phone: from,
+          message: text,
+          intent,
+          reply,
+          direction: "incoming",
+          createdAt: new Date(),
+        });
 
-      await message.reply(reply);
-      log("Reply sent to " + from + ": " + reply);
-    } catch (err) {
-      log("Message error: " + err.message);
+        await sock.sendMessage(msg.key.remoteJid, { text: reply });
+        log("Reply sent to " + from + ": " + reply);
+      } catch (err) {
+        log("Message handler error: " + err.message);
+      }
     }
   });
-
-  client.on("disconnected", async (reason) => {
-    log(
-      "Client disconnected for business: " + businessId + " reason: " + reason
-    );
-    statuses[businessId] = "disconnected";
-    delete clients[businessId];
-    try {
-      const db = mongoose.connection.db;
-      await db
-        .collection("businesses")
-        .updateOne(
-          { _id: new mongoose.Types.ObjectId(businessId) },
-          {
-            $set: {
-              whatsapp_status: "disconnected",
-              active: false,
-              updatedAt: new Date(),
-            },
-          }
-        );
-    } catch (err) {
-      log("Disconnect error: " + err.message);
-    }
-  });
-
-  client.on("auth_failure", (msg) => {
-    log("Auth failure for business: " + businessId + ": " + msg);
-    statuses[businessId] = "auth_failed";
-    delete clients[businessId];
-  });
-
-  await client.initialize();
 }
 
 async function restoreActiveSessions() {
@@ -161,7 +185,7 @@ async function restoreActiveSessions() {
       .toArray();
     log("Restoring " + businesses.length + " active WhatsApp sessions...");
     for (const biz of businesses) {
-      await createClient(biz._id.toString());
+      await createClient(biz.id);
     }
   } catch (err) {
     log("Restore sessions error: " + err.message);
@@ -178,10 +202,18 @@ function getStatus(businessId) {
 
 function disconnectClient(businessId) {
   if (clients[businessId]) {
-    clients[businessId].destroy();
+    try {
+      clients[businessId].end();
+    } catch (e) {}
     delete clients[businessId];
     delete qrCodes[businessId];
     statuses[businessId] = "disconnected";
+    const authDir = path.join(
+      __dirname,
+      "../../.wa_sessions",
+      businessId.toString()
+    );
+    if (fs.existsSync(authDir)) fs.rmSync(authDir, { recursive: true });
   }
 }
 
