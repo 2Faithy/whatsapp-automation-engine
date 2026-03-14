@@ -7,30 +7,40 @@ const authMiddleware = require("../../middleware/authMiddleware");
 router.get("/data", authMiddleware, async (req, res) => {
   try {
     const db = mongoose.connection.db;
-
     const business = await db.collection("businesses").findOne({
       id: req.user.business_id,
     });
 
+    if (!business) return res.status(404).json({ error: "Business not found" });
+
+    // Match by BOTH possible business_id formats (string id or ObjectId)
+    const bizIdMatch = {
+      $or: [
+        { business_id: req.user.business_id },
+        { business_id: business._id },
+        { business_id: business._id.toString() },
+      ],
+    };
+
     const conversations = await db
       .collection("conversations")
-      .find({ business_id: req.user.business_id })
+      .find(bizIdMatch)
       .sort({ createdAt: -1 })
       .limit(50)
       .toArray();
 
-    const totalMessages = await db.collection("conversations").countDocuments({
-      business_id: req.user.business_id,
-    });
+    const totalMessages = await db
+      .collection("conversations")
+      .countDocuments(bizIdMatch);
 
     const uniqueCustomers = await db
       .collection("conversations")
-      .distinct("customer_phone", { business_id: req.user.business_id });
+      .distinct("customer_phone", bizIdMatch);
 
     const intentStats = await db
       .collection("conversations")
       .aggregate([
-        { $match: { business_id: req.user.business_id } },
+        { $match: bizIdMatch },
         { $group: { _id: "$intent", count: { $sum: 1 } } },
         { $sort: { count: -1 } },
       ])
