@@ -4,42 +4,260 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dashboard — WA Automation</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
     <style>
-      :root {
-        --bg: #f5f5f3;
-        --surface: #ffffff;
-        --surface2: #f1f0eb;
-        --border: rgba(0, 0, 0, 0.1);
-        --text: #1a1a1a;
-        --text2: #666;
-        --green: #1d9e75;
-        --green-light: #e1f5ee;
-        --green-dark: #0f6e56;
-      }
-      [data-theme="dark"] {
-        --bg: #1a1a1a;
-        --surface: #242424;
-        --surface2: #2e2e2e;
-        --border: rgba(255, 255, 255, 0.1);
-        --text: #f0f0f0;
-        --text2: #999;
-        --green: #1d9e75;
-        --green-light: #0a2e22;
-        --green-dark: #5dcaa5;
-      }
       * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
-        transition: background 0.2s, color 0.2s, border-color 0.2s;
+      }
+      :root {
+        --bg: #f7f6f3;
+        --surface: #ffffff;
+        --surface2: #f0efe9;
+        --border: rgba(0, 0, 0, 0.07);
+        --text: #141414;
+        --text2: #6b6b6b;
+        --text3: #ababab;
+        --green: #1a9268;
+        --green-light: #e3f5ee;
+        --green-dark: #0d6147;
+        --red: #e53935;
+        --red-light: #ffebee;
+        --amber: #f59e0b;
+        --amber-light: #fffbeb;
+        --sidebar: 240px;
+        --radius: 10px;
+        --radius-lg: 14px;
+      }
+      [data-theme="dark"] {
+        --bg: #111110;
+        --surface: #1c1c1a;
+        --surface2: #242422;
+        --border: rgba(255, 255, 255, 0.07);
+        --text: #f0efe9;
+        --text2: #8a8a84;
+        --text3: #555550;
+        --green-light: #0d2b1f;
+        --green-dark: #4dc99a;
       }
       body {
-        font-family: system-ui, sans-serif;
+        font-family: "DM Sans", sans-serif;
         background: var(--bg);
         color: var(--text);
         min-height: 100vh;
+        display: flex;
+        font-size: 14px;
       }
-      .nav {
+      .sidebar {
+        width: var(--sidebar);
+        background: var(--surface);
+        border-right: 0.5px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        z-index: 50;
+        transition: transform 0.3s;
+      }
+      .sidebar-header {
+        padding: 20px;
+        border-bottom: 0.5px solid var(--border);
+      }
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .logo-icon {
+        width: 32px;
+        height: 32px;
+        background: var(--green);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .logo-icon svg {
+        width: 17px;
+        height: 17px;
+        fill: white;
+      }
+      .logo-name {
+        font-size: 15px;
+        font-weight: 600;
+        letter-spacing: -0.3px;
+      }
+      .sidebar-nav {
+        padding: 12px 8px;
+        flex: 1;
+        overflow-y: auto;
+      }
+      .nav-section {
+        margin-bottom: 20px;
+      }
+      .nav-label {
+        font-size: 10px;
+        color: var(--text3);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        padding: 0 12px;
+        margin-bottom: 6px;
+        font-weight: 500;
+      }
+      .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 9px 12px;
+        border-radius: var(--radius);
+        cursor: pointer;
+        color: var(--text2);
+        font-size: 13.5px;
+        transition: all 0.15s;
+        margin-bottom: 2px;
+        text-decoration: none;
+        border: none;
+        background: none;
+        width: 100%;
+        font-family: inherit;
+      }
+      .nav-item:hover {
+        background: var(--surface2);
+        color: var(--text);
+      }
+      .nav-item.active {
+        background: var(--green-light);
+        color: var(--green);
+      }
+      .nav-item svg {
+        width: 16px;
+        height: 16px;
+        flex-shrink: 0;
+      }
+      .nav-badge {
+        margin-left: auto;
+        background: var(--green);
+        color: white;
+        font-size: 10px;
+        padding: 2px 6px;
+        border-radius: 20px;
+        font-weight: 500;
+      }
+      .sidebar-footer {
+        padding: 12px 8px;
+        border-top: 0.5px solid var(--border);
+      }
+      .bot-status-bar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        background: var(--surface2);
+        border-radius: var(--radius);
+        margin-bottom: 8px;
+      }
+      .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+      .status-dot.connected {
+        background: #22c55e;
+        box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2);
+      }
+      .status-dot.disconnected {
+        background: #ef4444;
+      }
+      .status-dot.connecting {
+        background: var(--amber);
+        animation: pulse 1.5s infinite;
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.4;
+        }
+      }
+      .status-info {
+        flex: 1;
+        min-width: 0;
+      }
+      .status-name {
+        font-size: 12px;
+        font-weight: 500;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .status-label {
+        font-size: 11px;
+        color: var(--text3);
+      }
+      .theme-btn {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        background: none;
+        border: 0.5px solid var(--border);
+        border-radius: var(--radius);
+        cursor: pointer;
+        color: var(--text2);
+        font-size: 13px;
+        font-family: inherit;
+      }
+      .mobile-header {
+        display: none;
+        background: var(--surface);
+        border-bottom: 0.5px solid var(--border);
+        padding: 0 16px;
+        height: 52px;
+        align-items: center;
+        justify-content: space-between;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 40;
+      }
+      .hamburger {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 4px;
+        color: var(--text);
+      }
+      .hamburger svg {
+        width: 20px;
+        height: 20px;
+      }
+      .sidebar-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.4);
+        z-index: 45;
+      }
+      .main {
+        margin-left: var(--sidebar);
+        flex: 1;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      .topbar {
         background: var(--surface);
         border-bottom: 0.5px solid var(--border);
         padding: 0 24px;
@@ -49,159 +267,130 @@
         justify-content: space-between;
         position: sticky;
         top: 0;
-        z-index: 100;
+        z-index: 30;
       }
-      .nav-brand {
+      .topbar-title {
+        font-size: 15px;
+        font-weight: 600;
+        letter-spacing: -0.3px;
+      }
+      .user-chip {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 8px;
+        padding: 5px 12px;
+        background: var(--surface2);
+        border-radius: 20px;
+        font-size: 13px;
       }
-      .nav-dot {
-        width: 32px;
-        height: 32px;
+      .user-av {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
         background: var(--green);
-        border-radius: 8px;
         display: flex;
         align-items: center;
         justify-content: center;
-      }
-      .nav-dot svg {
-        width: 18px;
-        height: 18px;
-        fill: white;
-      }
-      .nav-title {
-        font-size: 15px;
-        font-weight: 500;
-        color: var(--text);
-      }
-      .nav-right {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-      .biz-badge {
-        background: var(--surface2);
-        border: 0.5px solid var(--border);
-        border-radius: 8px;
-        padding: 6px 12px;
-        font-size: 13px;
-        color: var(--text2);
-      }
-      .theme-btn {
-        background: var(--surface2);
-        border: 0.5px solid var(--border);
-        border-radius: 8px;
-        padding: 6px 12px;
-        font-size: 13px;
-        cursor: pointer;
-        color: var(--text);
+        font-size: 10px;
+        font-weight: 700;
+        color: white;
       }
       .logout-btn {
         background: none;
         border: 0.5px solid var(--border);
-        border-radius: 8px;
+        border-radius: var(--radius);
         padding: 6px 14px;
         font-size: 13px;
         cursor: pointer;
         color: var(--text2);
+        font-family: inherit;
       }
-      .main {
+      .content {
         padding: 24px;
-        max-width: 1100px;
-        margin: 0 auto;
+        flex: 1;
       }
-      .page-header {
-        margin-bottom: 24px;
-      }
-      .page-header h1 {
-        font-size: 22px;
-        font-weight: 500;
-        color: var(--text);
-      }
-      .page-header p {
-        font-size: 14px;
-        color: var(--text2);
-        margin-top: 4px;
-      }
-      .stats {
+      .stats-grid {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
         gap: 12px;
         margin-bottom: 24px;
       }
-      .stat {
-        background: var(--surface2);
-        border-radius: 8px;
-        padding: 16px;
+      .stat-card {
+        background: var(--surface);
+        border: 0.5px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 18px 20px;
       }
       .stat-label {
-        font-size: 12px;
-        color: var(--text2);
-        margin-bottom: 8px;
+        font-size: 10px;
+        color: var(--text3);
         text-transform: uppercase;
-        letter-spacing: 0.5px;
+        letter-spacing: 0.8px;
+        margin-bottom: 10px;
+        font-weight: 600;
       }
       .stat-value {
-        font-size: 24px;
-        font-weight: 500;
-        color: var(--text);
+        font-size: 26px;
+        font-weight: 600;
+        letter-spacing: -1px;
+        line-height: 1;
       }
       .stat-value.green {
         color: var(--green);
       }
+      .stat-sub {
+        font-size: 11px;
+        color: var(--text3);
+        margin-top: 5px;
+      }
       .tabs {
         display: flex;
-        gap: 4px;
-        margin-bottom: 20px;
+        gap: 2px;
         background: var(--surface2);
-        border-radius: 8px;
-        padding: 4px;
+        border-radius: var(--radius);
+        padding: 3px;
+        margin-bottom: 20px;
+        overflow-x: auto;
       }
       .tab {
-        flex: 1;
-        text-align: center;
-        padding: 8px;
-        border-radius: 6px;
+        padding: 7px 16px;
+        border-radius: 7px;
         font-size: 13px;
         cursor: pointer;
         color: var(--text2);
+        white-space: nowrap;
+        transition: all 0.15s;
+        border: none;
+        background: none;
+        font-family: inherit;
       }
       .tab.active {
         background: var(--surface);
         color: var(--text);
         font-weight: 500;
-        border: 0.5px solid var(--border);
       }
       .card {
         background: var(--surface);
         border: 0.5px solid var(--border);
-        border-radius: 12px;
+        border-radius: var(--radius-lg);
         padding: 20px;
+        margin-bottom: 16px;
       }
       .card-title {
-        font-size: 12px;
-        font-weight: 500;
-        margin-bottom: 16px;
-        color: var(--text2);
+        font-size: 10px;
+        font-weight: 600;
+        color: var(--text3);
         text-transform: uppercase;
-        letter-spacing: 0.5px;
+        letter-spacing: 0.8px;
+        margin-bottom: 16px;
       }
       .grid2 {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 16px;
-        margin-bottom: 16px;
-      }
-      .conv-card {
-        background: var(--surface);
-        border: 0.5px solid var(--border);
-        border-radius: 12px;
-        padding: 20px;
-        margin-bottom: 16px;
       }
       .conv-item {
-        padding: 12px 0;
+        padding: 14px 0;
         border-bottom: 0.5px solid var(--border);
       }
       .conv-item:last-child {
@@ -210,58 +399,81 @@
       .conv-meta {
         display: flex;
         justify-content: space-between;
+        align-items: center;
         margin-bottom: 8px;
+        gap: 8px;
+        flex-wrap: wrap;
       }
       .conv-phone {
-        font-size: 13px;
+        font-size: 12px;
         font-weight: 500;
+        font-family: "DM Mono", monospace;
         color: var(--text);
       }
       .conv-time {
-        font-size: 12px;
-        color: var(--text2);
+        font-size: 11px;
+        color: var(--text3);
       }
-      .msg-bubble {
+      .conv-intent {
+        font-size: 10px;
+        background: var(--green-light);
+        color: var(--green);
+        padding: 2px 8px;
+        border-radius: 20px;
+        font-weight: 600;
+        text-transform: capitalize;
+      }
+      .bubble {
         display: inline-block;
-        background: var(--surface2);
-        border-radius: 8px;
-        padding: 5px 10px;
+        padding: 7px 11px;
+        border-radius: 10px;
         font-size: 13px;
+        line-height: 1.5;
+        max-width: 85%;
         margin-bottom: 4px;
-        color: var(--text);
       }
-      .msg-bubble.ai {
+      .bubble.user {
+        background: var(--surface2);
+        color: var(--text);
+        border-bottom-left-radius: 3px;
+      }
+      .bubble.bot {
         background: var(--green-light);
         color: var(--green-dark);
+        border-bottom-right-radius: 3px;
+        display: block;
+        margin-left: auto;
       }
       .empty {
+        padding: 48px;
         text-align: center;
-        padding: 40px;
-        color: var(--text2);
+        color: var(--text3);
         font-size: 14px;
       }
       .form-group {
         margin-bottom: 14px;
       }
-      .form-group label {
+      .form-label {
         display: block;
-        font-size: 12px;
+        font-size: 11px;
         color: var(--text2);
-        margin-bottom: 6px;
+        margin-bottom: 5px;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
+        letter-spacing: 0.6px;
+        font-weight: 500;
       }
       input,
       textarea {
         width: 100%;
-        padding: 8px 12px;
+        padding: 9px 12px;
         border: 0.5px solid var(--border);
-        border-radius: 8px;
-        font-size: 14px;
+        border-radius: var(--radius);
+        font-size: 13.5px;
         background: var(--surface);
         color: var(--text);
         outline: none;
         font-family: inherit;
+        transition: border 0.15s;
       }
       input:focus,
       textarea:focus {
@@ -269,19 +481,20 @@
       }
       textarea {
         resize: vertical;
-        min-height: 72px;
+        min-height: 76px;
       }
       .save-btn {
         background: var(--green);
         color: white;
         border: none;
-        border-radius: 8px;
-        padding: 9px 20px;
-        font-size: 14px;
+        border-radius: var(--radius);
+        padding: 10px 20px;
+        font-size: 13.5px;
         font-weight: 500;
         cursor: pointer;
         width: 100%;
-        margin-top: 8px;
+        margin-top: 6px;
+        font-family: inherit;
       }
       .save-btn:hover {
         background: var(--green-dark);
@@ -295,407 +508,1057 @@
       .pricing-row input {
         flex: 1;
       }
+      .del-btn {
+        background: none;
+        border: none;
+        color: var(--text3);
+        cursor: pointer;
+        padding: 4px 8px;
+        font-size: 18px;
+      }
+      .del-btn:hover {
+        color: var(--red);
+      }
       .add-btn {
         background: none;
         border: 0.5px dashed var(--border);
-        border-radius: 8px;
+        border-radius: var(--radius);
         padding: 8px;
         width: 100%;
         font-size: 13px;
         color: var(--text2);
         cursor: pointer;
         margin-top: 4px;
+        font-family: inherit;
       }
       .add-btn:hover {
         background: var(--surface2);
       }
-      .del-btn {
-        background: none;
-        border: none;
-        color: var(--text2);
-        cursor: pointer;
-        padding: 4px 8px;
-        font-size: 16px;
-      }
-      .success {
+      .success-msg {
         color: var(--green);
-        font-size: 13px;
-        margin-top: 8px;
+        font-size: 12px;
+        margin-top: 6px;
         display: none;
       }
-      .loading {
+      .connect-box {
+        background: var(--surface2);
+        border-radius: var(--radius-lg);
+        padding: 24px;
         text-align: center;
-        padding: 60px;
+      }
+      .wa-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 7px 16px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 500;
+        margin-bottom: 18px;
+      }
+      .wa-badge.connected {
+        background: rgba(34, 197, 94, 0.1);
+        color: #16a34a;
+      }
+      .wa-badge.disconnected {
+        background: var(--red-light);
+        color: var(--red);
+      }
+      .wa-badge.connecting {
+        background: var(--amber-light);
+        color: var(--amber);
+      }
+      .qr-box {
+        background: white;
+        display: inline-block;
+        border-radius: 12px;
+        padding: 16px;
+        margin: 12px 0;
+      }
+      .qr-box img {
+        width: 180px;
+        height: 180px;
+        display: block;
+      }
+      .qr-spinner {
+        width: 180px;
+        height: 180px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .spinner {
+        width: 28px;
+        height: 28px;
+        border: 2.5px solid var(--surface2);
+        border-top-color: var(--green);
+        border-radius: 50%;
+        animation: spin 0.7s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .qr-steps {
+        text-align: left;
+        margin-top: 14px;
+        display: inline-block;
+      }
+      .qr-step {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        margin-bottom: 10px;
+        font-size: 13px;
         color: var(--text2);
+      }
+      .qr-num {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: var(--green);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        font-weight: 700;
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
+      .connect-btn {
+        background: var(--green);
+        color: white;
+        border: none;
+        border-radius: var(--radius);
+        padding: 10px 24px;
+        font-size: 13.5px;
+        font-weight: 500;
+        cursor: pointer;
+        font-family: inherit;
+      }
+      .disconnect-btn {
+        background: none;
+        color: var(--red);
+        border: 0.5px solid var(--red);
+        border-radius: var(--radius);
+        padding: 8px 20px;
+        font-size: 13px;
+        cursor: pointer;
+        font-family: inherit;
+        margin-top: 10px;
+      }
+      .search-wrap {
+        position: relative;
+        margin-bottom: 16px;
+      }
+      .search-wrap input {
+        padding-left: 34px;
+      }
+      .search-ic {
+        position: absolute;
+        left: 11px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text3);
+      }
+      .search-ic svg {
+        width: 14px;
+        height: 14px;
+      }
+      .mobile-nav {
+        display: none;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: var(--surface);
+        border-top: 0.5px solid var(--border);
+        padding: 6px 0 8px;
+        z-index: 40;
+      }
+      .mobile-nav-inner {
+        display: flex;
+        justify-content: space-around;
+      }
+      .mob-nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 3px;
+        padding: 6px 12px;
+        cursor: pointer;
+        color: var(--text3);
+        font-size: 10px;
+        background: none;
+        border: none;
+        font-family: inherit;
+      }
+      .mob-nav-item.active {
+        color: var(--green);
+      }
+      .mob-nav-item svg {
+        width: 20px;
+        height: 20px;
+      }
+      @media (max-width: 768px) {
+        .sidebar {
+          transform: translateX(-100%);
+        }
+        .sidebar.open {
+          transform: translateX(0);
+        }
+        .sidebar-overlay.open {
+          display: block;
+        }
+        .mobile-header {
+          display: flex;
+        }
+        .main {
+          margin-left: 0;
+          padding-top: 52px;
+          padding-bottom: 68px;
+        }
+        .topbar {
+          display: none;
+        }
+        .stats-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+        .grid2 {
+          grid-template-columns: 1fr;
+        }
+        .content {
+          padding: 14px;
+        }
+        .mobile-nav {
+          display: block;
+        }
       }
     </style>
   </head>
   <body data-theme="light" id="app">
-    <div class="nav">
-      <div class="nav-brand">
-        <div class="nav-dot">
+    <div class="mobile-header">
+      <button class="hamburger" onclick="toggleSidebar()">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <line x1="3" y1="6" x2="21" y2="6" />
+          <line x1="3" y1="12" x2="21" y2="12" />
+          <line x1="3" y1="18" x2="21" y2="18" />
+        </svg>
+      </button>
+      <div class="logo">
+        <div class="logo-icon">
           <svg viewBox="0 0 24 24">
             <path
               d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"
             />
           </svg>
         </div>
-        <span class="nav-title">WA Automation</span>
+        <span class="logo-name">WA Automation</span>
       </div>
-      <div class="nav-right">
-        <span class="biz-badge" id="biz-name-nav">Loading...</span>
-        <button class="theme-btn" onclick="toggleTheme()" id="theme-btn">
-          🌙 Dark
+      <div style="width: 28px"></div>
+    </div>
+
+    <div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <div class="logo-icon">
+            <svg viewBox="0 0 24 24">
+              <path
+                d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"
+              />
+            </svg>
+          </div>
+          <span class="logo-name">WA Automation</span>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-label">Main</div>
+          <button
+            class="nav-item active"
+            onclick="switchTab('conversations',this)"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"
+              /></svg
+            >Conversations<span class="nav-badge" id="conv-badge">0</span>
+          </button>
+          <button class="nav-item" onclick="switchTab('analytics',this)">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" /></svg
+            >Analytics
+          </button>
+        </div>
+        <div class="nav-section">
+          <div class="nav-label">Settings</div>
+          <button class="nav-item" onclick="switchTab('business',this)">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <rect x="2" y="3" width="20" height="14" rx="2" />
+              <line x1="8" y1="21" x2="16" y2="21" />
+              <line x1="12" y1="17" x2="12" y2="21" /></svg
+            >Business Info
+          </button>
+          <button class="nav-item" onclick="switchTab('pricing',this)">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <line x1="12" y1="1" x2="12" y2="23" />
+              <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" /></svg
+            >Pricing & FAQs
+          </button>
+          <button class="nav-item" onclick="switchTab('whatsapp',this)">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8 19.79 19.79 0 01.22 1.18 2 2 0 012.22 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.91a16 16 0 006.18 6.18l1.57-1.57a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"
+              /></svg
+            >WhatsApp Bot
+          </button>
+        </div>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="bot-status-bar">
+          <div class="status-dot" id="sidebar-dot"></div>
+          <div class="status-info">
+            <div class="status-name" id="sidebar-biz">Loading...</div>
+            <div class="status-label" id="sidebar-status">Checking...</div>
+          </div>
+        </div>
+        <button class="theme-btn" onclick="toggleTheme()">
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <circle cx="12" cy="12" r="5" />
+            <line x1="12" y1="1" x2="12" y2="3" />
+            <line x1="12" y1="21" x2="12" y2="23" />
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+            <line x1="1" y1="12" x2="3" y2="12" />
+            <line x1="21" y1="12" x2="23" y2="12" /></svg
+          ><span id="theme-label">Light mode</span>
         </button>
-        <button class="logout-btn" onclick="logout()">Logout</button>
+      </div>
+    </aside>
+
+    <div class="main">
+      <div class="topbar">
+        <span class="topbar-title" id="page-title">Conversations</span>
+        <div style="display: flex; align-items: center; gap: 10px">
+          <div class="user-chip">
+            <div class="user-av" id="user-av">?</div>
+            <span id="user-name">...</span>
+          </div>
+          <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">Messages</div>
+            <div class="stat-value green" id="stat-total">—</div>
+            <div class="stat-sub">All time</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Customers</div>
+            <div class="stat-value" id="stat-customers">—</div>
+            <div class="stat-sub">Unique</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Top intent</div>
+            <div
+              class="stat-value"
+              id="stat-intent"
+              style="font-size: 15px; padding-top: 6px"
+            >
+              —
+            </div>
+            <div class="stat-sub">Most asked</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Bot</div>
+            <div
+              class="stat-value"
+              id="stat-bot"
+              style="font-size: 13px; padding-top: 7px"
+            >
+              —
+            </div>
+            <div class="stat-sub" id="stat-number">—</div>
+          </div>
+        </div>
+
+        <div id="conversations-tab">
+          <div class="search-wrap">
+            <span class="search-ic"
+              ><svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" /></svg></span
+            ><input
+              placeholder="Search by phone, message..."
+              oninput="filterConvs(this.value)"
+            />
+          </div>
+          <div class="card" style="padding: 0 20px">
+            <div id="conv-list"></div>
+          </div>
+        </div>
+
+        <div id="analytics-tab" style="display: none">
+          <div class="grid2">
+            <div class="card">
+              <div class="card-title">Intent breakdown</div>
+              <div id="intent-list"></div>
+            </div>
+            <div class="card">
+              <div class="card-title">Overview</div>
+              <div id="overview-stats"></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="business-tab" style="display: none">
+          <div class="grid2">
+            <div class="card">
+              <div class="card-title">Business details</div>
+              <div class="form-group">
+                <label class="form-label">Business name</label
+                ><input id="s-name" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Location</label
+                ><input id="s-location" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Phone</label><input id="s-phone" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Email</label><input id="s-email" />
+              </div>
+              <button class="save-btn" onclick="saveSettings()">
+                Save changes
+              </button>
+              <div class="success-msg" id="settings-ok">✓ Saved!</div>
+            </div>
+            <div class="card">
+              <div class="card-title">Hours & messages</div>
+              <div class="form-group">
+                <label class="form-label">Weekdays</label
+                ><input id="s-weekdays" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Saturday</label
+                ><input id="s-saturday" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Sunday</label><input id="s-sunday" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Greeting message</label
+                ><textarea id="s-greeting"></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Fallback message</label
+                ><textarea id="s-fallback"></textarea>
+              </div>
+              <button class="save-btn" onclick="saveHours()">Save hours</button>
+              <div class="success-msg" id="hours-ok">✓ Saved!</div>
+            </div>
+          </div>
+        </div>
+
+        <div id="pricing-tab" style="display: none">
+          <div class="grid2">
+            <div class="card">
+              <div class="card-title">Menu & pricing</div>
+              <div id="pricing-list"></div>
+              <button class="add-btn" onclick="addPricing()">+ Add item</button>
+              <button class="save-btn" onclick="savePricing()">
+                Save pricing
+              </button>
+              <div class="success-msg" id="pricing-ok">✓ Saved!</div>
+            </div>
+            <div class="card">
+              <div class="card-title">FAQs</div>
+              <div id="faq-list"></div>
+              <button class="add-btn" onclick="addFaq()">+ Add FAQ</button>
+              <button class="save-btn" onclick="saveFaqs()">Save FAQs</button>
+              <div class="success-msg" id="faq-ok">✓ Saved!</div>
+            </div>
+          </div>
+        </div>
+
+        <div id="whatsapp-tab" style="display: none">
+          <div class="card">
+            <div class="card-title">WhatsApp connection</div>
+            <div class="connect-box">
+              <div class="wa-badge" id="wa-badge">Checking...</div>
+              <div id="wa-on" style="display: none">
+                <p
+                  style="
+                    font-size: 14px;
+                    color: var(--text2);
+                    margin-bottom: 12px;
+                  "
+                >
+                  Your bot is live and replying to customers 24/7 🎉
+                </p>
+                <p
+                  style="
+                    font-size: 13px;
+                    color: var(--text3);
+                    margin-bottom: 16px;
+                  "
+                >
+                  Number:
+                  <strong
+                    id="wa-num"
+                    style="
+                      font-family: 'DM Mono', monospace;
+                      color: var(--text);
+                    "
+                    >—</strong
+                  >
+                </p>
+                <button class="disconnect-btn" onclick="disconnectWA()">
+                  Disconnect WhatsApp
+                </button>
+              </div>
+              <div id="wa-off">
+                <p
+                  style="
+                    font-size: 14px;
+                    color: var(--text2);
+                    margin-bottom: 16px;
+                  "
+                >
+                  Connect your WhatsApp to activate the bot on your number.
+                </p>
+                <div class="qr-box" id="qr-box">
+                  <div class="qr-spinner" id="qr-spinner" style="display: none">
+                    <div class="spinner"></div>
+                    <span style="font-size: 12px; color: #999"
+                      >Generating...</span
+                    >
+                  </div>
+                  <img id="qr-img" style="display: none" />
+                  <div
+                    id="qr-ph"
+                    style="
+                      width: 180px;
+                      height: 180px;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      color: #ccc;
+                      font-size: 12px;
+                      text-align: center;
+                    "
+                  >
+                    Click button below to generate QR code
+                  </div>
+                </div>
+                <div class="qr-steps" id="qr-steps" style="display: none">
+                  <div class="qr-step">
+                    <div class="qr-num">1</div>
+                    Open WhatsApp on your phone
+                  </div>
+                  <div class="qr-step">
+                    <div class="qr-num">2</div>
+                    Tap Menu (⋮) → Linked Devices
+                  </div>
+                  <div class="qr-step">
+                    <div class="qr-num">3</div>
+                    Tap "Link a Device"
+                  </div>
+                  <div class="qr-step">
+                    <div class="qr-num">4</div>
+                    Point camera at QR code above
+                  </div>
+                </div>
+                <button
+                  class="connect-btn"
+                  id="connect-btn"
+                  onclick="startConnection()"
+                >
+                  Generate QR Code
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="main">
-      <div class="page-header">
-        <h1>Dashboard</h1>
-        <p>Manage your WhatsApp automation</p>
-      </div>
-
-      <div class="stats">
-        <div class="stat">
-          <div class="stat-label">Total messages</div>
-          <div class="stat-value green" id="stat-total">—</div>
-        </div>
-        <div class="stat">
-          <div class="stat-label">Unique customers</div>
-          <div class="stat-value" id="stat-customers">—</div>
-        </div>
-        <div class="stat">
-          <div class="stat-label">Top intent</div>
-          <div
-            class="stat-value"
-            id="stat-intent"
-            style="font-size: 16px; padding-top: 4px"
+    <div class="mobile-nav">
+      <div class="mobile-nav-inner">
+        <button
+          class="mob-nav-item active"
+          onclick="switchTab('conversations',this)"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
           >
-            —
-          </div>
-        </div>
-        <div class="stat">
-          <div class="stat-label">Status</div>
-          <div
-            class="stat-value green"
-            style="font-size: 14px; padding-top: 6px"
+            <path
+              d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"
+            /></svg
+          >Chats
+        </button>
+        <button class="mob-nav-item" onclick="switchTab('analytics',this)">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
           >
-            ● Active
-          </div>
-        </div>
-      </div>
-
-      <div class="tabs">
-        <div class="tab active" onclick="switchTab('conversations',this)">
-          Conversations
-        </div>
-        <div class="tab" onclick="switchTab('settings',this)">Settings</div>
-        <div class="tab" onclick="switchTab('pricing',this)">
-          Pricing & FAQs
-        </div>
-      </div>
-
-      <!-- Conversations Tab -->
-      <div id="conversations-tab">
-        <div class="conv-card">
-          <div class="card-title">Recent conversations</div>
-          <div id="conv-list">
-            <div class="loading">Loading conversations...</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Settings Tab -->
-      <div id="settings-tab" style="display: none">
-        <div class="grid2">
-          <div class="card">
-            <div class="card-title">Business info</div>
-            <div class="form-group">
-              <label>Business name</label><input id="s-name" />
-            </div>
-            <div class="form-group">
-              <label>Location</label><input id="s-location" />
-            </div>
-            <div class="form-group">
-              <label>Contact phone</label><input id="s-phone" />
-            </div>
-            <div class="form-group">
-              <label>Contact email</label><input id="s-email" />
-            </div>
-            <button class="save-btn" onclick="saveSettings()">
-              Save changes
-            </button>
-            <div class="success" id="settings-success">Saved!</div>
-          </div>
-          <div class="card">
-            <div class="card-title">Opening hours & greeting</div>
-            <div class="form-group">
-              <label>Weekdays</label><input id="s-weekdays" />
-            </div>
-            <div class="form-group">
-              <label>Saturday</label><input id="s-saturday" />
-            </div>
-            <div class="form-group">
-              <label>Sunday</label><input id="s-sunday" />
-            </div>
-            <div class="form-group">
-              <label>Greeting message</label
-              ><textarea id="s-greeting"></textarea>
-            </div>
-            <div class="form-group">
-              <label>Fallback message</label
-              ><textarea id="s-fallback"></textarea>
-            </div>
-            <button class="save-btn" onclick="saveHours()">
-              Save hours & greeting
-            </button>
-            <div class="success" id="hours-success">Saved!</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Pricing & FAQs Tab -->
-      <div id="pricing-tab" style="display: none">
-        <div class="grid2">
-          <div class="card">
-            <div class="card-title">Menu & pricing</div>
-            <div id="pricing-list"></div>
-            <button class="add-btn" onclick="addPricing()">+ Add item</button>
-            <button class="save-btn" onclick="savePricing()">
-              Save pricing
-            </button>
-            <div class="success" id="pricing-success">Saved!</div>
-          </div>
-          <div class="card">
-            <div class="card-title">FAQs</div>
-            <div id="faq-list"></div>
-            <button class="add-btn" onclick="addFaq()">+ Add FAQ</button>
-            <button class="save-btn" onclick="saveFaqs()">Save FAQs</button>
-            <div class="success" id="faq-success">Saved!</div>
-          </div>
-        </div>
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" /></svg
+          >Stats
+        </button>
+        <button class="mob-nav-item" onclick="switchTab('business',this)">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <rect x="2" y="3" width="20" height="14" rx="2" /></svg
+          >Settings
+        </button>
+        <button class="mob-nav-item" onclick="switchTab('pricing',this)">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <line x1="12" y1="1" x2="12" y2="23" />
+            <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" /></svg
+          >Pricing
+        </button>
+        <button class="mob-nav-item" onclick="switchTab('whatsapp',this)">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8 19.79 19.79 0 01.22 1.18 2 2 0 012.22 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.91a16 16 0 006.18 6.18l1.57-1.57a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"
+            /></svg
+          >Bot
+        </button>
       </div>
     </div>
 
     <script>
-      let bizData = null;
-
-      // Theme toggle
-      function toggleTheme() {
-        const app = document.getElementById("app");
-        const btn = document.getElementById("theme-btn");
-        const isDark = app.getAttribute("data-theme") === "dark";
-        app.setAttribute("data-theme", isDark ? "light" : "dark");
-        btn.textContent = isDark ? "🌙 Dark" : "☀️ Light";
-        localStorage.setItem("theme", isDark ? "light" : "dark");
-      }
-
-      // Load saved theme
+      let bizData = null,
+        allConvs = [],
+        pollInt = null;
       const savedTheme = localStorage.getItem("theme") || "light";
       document.getElementById("app").setAttribute("data-theme", savedTheme);
-      document.getElementById("theme-btn").textContent =
-        savedTheme === "dark" ? "☀️ Light" : "🌙 Dark";
+      document.getElementById("theme-label").textContent =
+        savedTheme === "dark" ? "Dark mode" : "Light mode";
 
-      // Tab switching
-      function switchTab(name, el) {
-        document
-          .querySelectorAll(".tab")
-          .forEach((t) => t.classList.remove("active"));
-        el.classList.add("active");
-        ["conversations", "settings", "pricing"].forEach((t) => {
-          document.getElementById(t + "-tab").style.display =
-            t === name ? "block" : "none";
-        });
+      function toggleTheme() {
+        const a = document.getElementById("app");
+        const d = a.getAttribute("data-theme") === "dark";
+        a.setAttribute("data-theme", d ? "light" : "dark");
+        document.getElementById("theme-label").textContent = d
+          ? "Light mode"
+          : "Dark mode";
+        localStorage.setItem("theme", d ? "light" : "dark");
+      }
+      function toggleSidebar() {
+        document.getElementById("sidebar").classList.toggle("open");
+        document.getElementById("overlay").classList.toggle("open");
       }
 
-      // Load dashboard data
+      const tabNames = {
+        conversations: "Conversations",
+        analytics: "Analytics",
+        business: "Business Info",
+        pricing: "Pricing & FAQs",
+        whatsapp: "WhatsApp Bot",
+      };
+      function switchTab(name, el) {
+        [
+          "conversations",
+          "analytics",
+          "business",
+          "pricing",
+          "whatsapp",
+        ].forEach(
+          (t) => (document.getElementById(t + "-tab").style.display = "none")
+        );
+        document.getElementById(name + "-tab").style.display = "block";
+        document
+          .querySelectorAll(".nav-item,.mob-nav-item")
+          .forEach((i) => i.classList.remove("active"));
+        if (el) el.classList.add("active");
+        document.getElementById("page-title").textContent =
+          tabNames[name] || name;
+        if (name === "whatsapp") checkWAStatus();
+        if (window.innerWidth <= 768) toggleSidebar();
+      }
+
       async function loadDashboard() {
-        const res = await fetch("/dashboard/data");
-        if (res.status === 401 || res.redirected) {
-          window.location.href = "/";
-          return;
-        }
-        const data = await res.json();
-        bizData = data.business;
-
-        // Update nav
-        document.getElementById("biz-name-nav").textContent = bizData.name;
-
-        // Stats
-        document.getElementById("stat-total").textContent =
-          data.analytics.totalMessages;
-        document.getElementById("stat-customers").textContent =
-          data.analytics.uniqueCustomers;
-        const topIntent = data.analytics.intentStats[0];
-        document.getElementById("stat-intent").textContent = topIntent
-          ? topIntent._id
-          : "None yet";
-
-        // Conversations
-        const convList = document.getElementById("conv-list");
-        if (data.conversations.length === 0) {
-          convList.innerHTML =
-            '<div class="empty">No conversations yet. Messages will appear here once customers start chatting.</div>';
-        } else {
-          convList.innerHTML = data.conversations
+        try {
+          const res = await fetch("/dashboard/data");
+          if (res.status === 401) {
+            window.location.href = "/login";
+            return;
+          }
+          const data = await res.json();
+          bizData = data.business;
+          allConvs = data.conversations;
+          const n = bizData.name || "Business";
+          document.getElementById("user-name").textContent = n;
+          document.getElementById("user-av").textContent = n
+            .charAt(0)
+            .toUpperCase();
+          document.getElementById("sidebar-biz").textContent = n;
+          document.getElementById("stat-total").textContent =
+            data.analytics.totalMessages;
+          document.getElementById("stat-customers").textContent =
+            data.analytics.uniqueCustomers;
+          document.getElementById("conv-badge").textContent =
+            data.analytics.totalMessages;
+          const top = data.analytics.intentStats[0];
+          document.getElementById("stat-intent").textContent = top
+            ? top._id
+            : "None yet";
+          updateBotStatus(
+            bizData.whatsapp_status || "disconnected",
+            bizData.whatsapp_number
+          );
+          renderConvs(allConvs);
+          renderAnalytics(data.analytics);
+          document.getElementById("s-name").value = bizData.name || "";
+          document.getElementById("s-location").value = bizData.location || "";
+          document.getElementById("s-phone").value =
+            bizData.contact?.phone || "";
+          document.getElementById("s-email").value =
+            bizData.contact?.email || "";
+          document.getElementById("s-weekdays").value =
+            bizData.hours?.weekdays || "";
+          document.getElementById("s-saturday").value =
+            bizData.hours?.saturday || "";
+          document.getElementById("s-sunday").value =
+            bizData.hours?.sunday || "";
+          document.getElementById("s-greeting").value = bizData.greeting || "";
+          document.getElementById("s-fallback").value = bizData.fallback || "";
+          document.getElementById("pricing-list").innerHTML = (
+            bizData.pricing || []
+          )
             .map(
-              (c) => `
-      <div class="conv-item">
-        <div class="conv-meta">
-          <span class="conv-phone">${c.customer_phone}</span>
-          <span class="conv-time">${new Date(
-            c.createdAt
-          ).toLocaleString()}</span>
-        </div>
-        <div><span class="msg-bubble">${c.message}</span></div>
-        <div><span class="msg-bubble ai">${c.reply}</span></div>
-      </div>
-    `
+              (p) =>
+                `<div class="pricing-row"><input placeholder="Item" value="${
+                  p.item || ""
+                }" class="item-name"/><input placeholder="Price" value="${
+                  p.price || ""
+                }" style="max-width:110px;" class="item-price"/><button class="del-btn" onclick="this.parentElement.remove()">×</button></div>`
             )
             .join("");
+          document.getElementById("faq-list").innerHTML = (bizData.faqs || [])
+            .map(
+              (f) =>
+                `<div class="form-group"><label class="form-label">Question</label><input value="${
+                  f.question || ""
+                }" class="faq-q"/></div><div class="form-group"><label class="form-label">Answer</label><textarea class="faq-a">${
+                  f.answer || ""
+                }</textarea></div>`
+            )
+            .join("");
+        } catch (e) {
+          console.error(e);
         }
+      }
 
-        // Settings
-        document.getElementById("s-name").value = bizData.name || "";
-        document.getElementById("s-location").value = bizData.location || "";
-        document.getElementById("s-phone").value = bizData.contact?.phone || "";
-        document.getElementById("s-email").value = bizData.contact?.email || "";
-        document.getElementById("s-weekdays").value =
-          bizData.hours?.weekdays || "";
-        document.getElementById("s-saturday").value =
-          bizData.hours?.saturday || "";
-        document.getElementById("s-sunday").value = bizData.hours?.sunday || "";
-        document.getElementById("s-greeting").value = bizData.greeting || "";
-        document.getElementById("s-fallback").value = bizData.fallback || "";
+      function updateBotStatus(status, number) {
+        const dot = document.getElementById("sidebar-dot");
+        const lbl = document.getElementById("sidebar-status");
+        const bot = document.getElementById("stat-bot");
+        const num = document.getElementById("stat-number");
+        if (status === "connected") {
+          dot.className = "status-dot connected";
+          lbl.textContent = "Bot active";
+          bot.textContent = "● Active";
+          bot.style.color = "var(--green)";
+          num.textContent = number ? "+" + number : "Connected";
+        } else if (status === "qr_ready") {
+          dot.className = "status-dot connecting";
+          lbl.textContent = "Awaiting scan";
+          bot.textContent = "◌ Connecting";
+          bot.style.color = "var(--amber)";
+          num.textContent = "Scan QR code";
+        } else {
+          dot.className = "status-dot disconnected";
+          lbl.textContent = "Bot inactive";
+          bot.textContent = "● Inactive";
+          bot.style.color = "var(--red)";
+          num.textContent = "Not connected";
+        }
+      }
 
-        // Pricing
-        const pricingList = document.getElementById("pricing-list");
-        pricingList.innerHTML = (bizData.pricing || [])
+      function renderConvs(convs) {
+        const el = document.getElementById("conv-list");
+        if (!convs.length) {
+          el.innerHTML =
+            '<div class="empty">💬 No conversations yet. Once customers message your WhatsApp number, chats will appear here.</div>';
+          return;
+        }
+        el.innerHTML = convs
           .map(
-            (p, i) => `
-    <div class="pricing-row">
-      <input placeholder="Item name" value="${p.item}" data-index="${i}" data-field="item" />
-      <input placeholder="Price" value="${p.price}" style="max-width:100px;" data-index="${i}" data-field="price" />
-      <button class="del-btn" onclick="this.parentElement.remove()">×</button>
-    </div>
-  `
-          )
-          .join("");
-
-        // FAQs
-        const faqList = document.getElementById("faq-list");
-        faqList.innerHTML = (bizData.faqs || [])
-          .map(
-            (f, i) => `
-    <div class="form-group">
-      <label>Question</label>
-      <input value="${f.question}" data-faq="${i}" data-field="question" />
-    </div>
-    <div class="form-group">
-      <label>Answer</label>
-      <textarea data-faq="${i}" data-field="answer">${f.answer}</textarea>
-    </div>
-  `
+            (c) =>
+              `<div class="conv-item"><div class="conv-meta"><span class="conv-phone">${
+                c.customer_phone
+              }</span><div style="display:flex;gap:6px;align-items:center;"><span class="conv-intent">${
+                c.intent || "unknown"
+              }</span><span class="conv-time">${new Date(
+                c.createdAt
+              ).toLocaleString()}</span></div></div><div><span class="bubble user">${
+                c.message
+              }</span><span class="bubble bot">${c.reply}</span></div></div>`
           )
           .join("");
       }
 
-      function addPricing() {
-        const list = document.getElementById("pricing-list");
-        const row = document.createElement("div");
-        row.className = "pricing-row";
-        row.innerHTML =
-          '<input placeholder="Item name" /><input placeholder="Price" style="max-width:100px;" /><button class="del-btn" onclick="this.parentElement.remove()">×</button>';
-        list.appendChild(row);
+      function filterConvs(q) {
+        renderConvs(
+          allConvs.filter(
+            (c) =>
+              c.customer_phone?.includes(q) ||
+              c.message?.toLowerCase().includes(q.toLowerCase()) ||
+              c.reply?.toLowerCase().includes(q.toLowerCase())
+          )
+        );
       }
 
-      function addFaq() {
-        const list = document.getElementById("faq-list");
-        const div = document.createElement("div");
-        div.innerHTML =
-          '<div class="form-group"><label>Question</label><input placeholder="e.g. do you deliver?" /></div><div class="form-group"><label>Answer</label><textarea placeholder="Your answer..."></textarea></div>';
-        list.appendChild(div);
+      function renderAnalytics(a) {
+        document.getElementById("intent-list").innerHTML = a.intentStats.length
+          ? a.intentStats
+              .map(
+                (i) =>
+                  `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:0.5px solid var(--border);"><span style="font-size:13px;text-transform:capitalize;">${
+                    i._id || "unknown"
+                  }</span><div style="display:flex;align-items:center;gap:8px;"><div style="width:70px;height:3px;background:var(--surface2);border-radius:2px;"><div style="width:${Math.min(
+                    100,
+                    (i.count / Math.max(a.totalMessages, 1)) * 100
+                  )}%;height:100%;background:var(--green);border-radius:2px;"></div></div><span style="font-size:13px;font-weight:500;">${
+                    i.count
+                  }</span></div></div>`
+              )
+              .join("")
+          : '<div class="empty">No data yet</div>';
+        document.getElementById(
+          "overview-stats"
+        ).innerHTML = `<div style="padding:12px 0;border-bottom:0.5px solid var(--border);display:flex;justify-content:space-between;"><span style="font-size:13px;color:var(--text2);">Total messages</span><span style="font-weight:500;">${a.totalMessages}</span></div><div style="padding:12px 0;border-bottom:0.5px solid var(--border);display:flex;justify-content:space-between;"><span style="font-size:13px;color:var(--text2);">Unique customers</span><span style="font-weight:500;">${a.uniqueCustomers}</span></div><div style="padding:12px 0;display:flex;justify-content:space-between;"><span style="font-size:13px;color:var(--text2);">Intent types</span><span style="font-weight:500;">${a.intentStats.length}</span></div>`;
+      }
+
+      async function checkWAStatus() {
+        try {
+          const res = await fetch("/whatsapp/status");
+          const d = await res.json();
+          const badge = document.getElementById("wa-badge");
+          if (d.status === "connected") {
+            badge.className = "wa-badge connected";
+            badge.textContent = "● Bot Connected";
+            document.getElementById("wa-on").style.display = "block";
+            document.getElementById("wa-off").style.display = "none";
+            document.getElementById("wa-num").textContent =
+              bizData?.whatsapp_number ? "+" + bizData.whatsapp_number : "—";
+          } else {
+            badge.className = "wa-badge disconnected";
+            badge.textContent = "● Not Connected";
+            document.getElementById("wa-on").style.display = "none";
+            document.getElementById("wa-off").style.display = "block";
+          }
+        } catch (e) {}
+      }
+
+      async function startConnection() {
+        document.getElementById("connect-btn").style.display = "none";
+        document.getElementById("qr-ph").style.display = "none";
+        document.getElementById("qr-spinner").style.display = "flex";
+        const badge = document.getElementById("wa-badge");
+        badge.className = "wa-badge connecting";
+        badge.textContent = "◌ Generating QR...";
+        try {
+          await fetch("/whatsapp/connect", { method: "POST" });
+          pollQR();
+        } catch (e) {
+          document.getElementById("connect-btn").style.display = "block";
+          alert("Error. Try again.");
+        }
+      }
+
+      function pollQR() {
+        if (pollInt) clearInterval(pollInt);
+        pollInt = setInterval(async () => {
+          try {
+            const res = await fetch("/whatsapp/qr");
+            const d = await res.json();
+            const badge = document.getElementById("wa-badge");
+            if (d.status === "connected") {
+              clearInterval(pollInt);
+              badge.className = "wa-badge connected";
+              badge.textContent = "● Connected!";
+              document.getElementById("wa-on").style.display = "block";
+              document.getElementById("wa-off").style.display = "none";
+              updateBotStatus("connected", bizData?.whatsapp_number);
+              loadDashboard();
+            } else if (d.qr) {
+              document.getElementById("qr-spinner").style.display = "none";
+              document.getElementById("qr-img").src = d.qr;
+              document.getElementById("qr-img").style.display = "block";
+              document.getElementById("qr-steps").style.display = "block";
+              badge.className = "wa-badge connecting";
+              badge.textContent = "◌ Scan with WhatsApp";
+            }
+          } catch (e) {}
+        }, 2000);
+      }
+
+      async function disconnectWA() {
+        if (!confirm("Disconnect? Bot will stop replying until you reconnect."))
+          return;
+        await fetch("/whatsapp/disconnect", { method: "POST" });
+        document.getElementById("wa-on").style.display = "none";
+        document.getElementById("wa-off").style.display = "block";
+        document.getElementById("qr-img").style.display = "none";
+        document.getElementById("qr-ph").style.display = "flex";
+        document.getElementById("connect-btn").style.display = "block";
+        document.getElementById("wa-badge").className = "wa-badge disconnected";
+        document.getElementById("wa-badge").textContent = "● Not Connected";
+        updateBotStatus("disconnected", null);
       }
 
       async function saveSettings() {
-        const updates = {
-          name: document.getElementById("s-name").value,
-          location: document.getElementById("s-location").value,
-          contact: {
-            phone: document.getElementById("s-phone").value,
-            email: document.getElementById("s-email").value,
-          },
-        };
         await fetch("/dashboard/business", {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(updates),
+          body: JSON.stringify({
+            name: document.getElementById("s-name").value,
+            location: document.getElementById("s-location").value,
+            contact: {
+              phone: document.getElementById("s-phone").value,
+              email: document.getElementById("s-email").value,
+            },
+          }),
         });
-        showSuccess("settings-success");
+        showOk("settings-ok");
       }
-
       async function saveHours() {
-        const updates = {
-          greeting: document.getElementById("s-greeting").value,
-          fallback: document.getElementById("s-fallback").value,
-          hours: {
-            weekdays: document.getElementById("s-weekdays").value,
-            saturday: document.getElementById("s-saturday").value,
-            sunday: document.getElementById("s-sunday").value,
-          },
-        };
         await fetch("/dashboard/business", {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(updates),
+          body: JSON.stringify({
+            greeting: document.getElementById("s-greeting").value,
+            fallback: document.getElementById("s-fallback").value,
+            hours: {
+              weekdays: document.getElementById("s-weekdays").value,
+              saturday: document.getElementById("s-saturday").value,
+              sunday: document.getElementById("s-sunday").value,
+            },
+          }),
         });
-        showSuccess("hours-success");
+        showOk("hours-ok");
       }
-
       async function savePricing() {
-        const rows = document.querySelectorAll("#pricing-list .pricing-row");
-        const pricing = Array.from(rows)
-          .map((row) => {
-            const inputs = row.querySelectorAll("input");
-            return { item: inputs[0].value, price: inputs[1].value };
-          })
+        const pricing = Array.from(
+          document.querySelectorAll("#pricing-list .pricing-row")
+        )
+          .map((r) => ({
+            item: r.querySelector(".item-name").value,
+            price: r.querySelector(".item-price").value,
+          }))
           .filter((p) => p.item && p.price);
         await fetch("/dashboard/business", {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ pricing }),
         });
-        showSuccess("pricing-success");
+        showOk("pricing-ok");
       }
-
       async function saveFaqs() {
-        const questions = document.querySelectorAll("#faq-list input");
-        const answers = document.querySelectorAll("#faq-list textarea");
-        const faqs = Array.from(questions)
-          .map((q, i) => ({
-            question: q.value,
-            answer: answers[i]?.value || "",
-          }))
+        const qs = document.querySelectorAll("#faq-list .faq-q"),
+          as = document.querySelectorAll("#faq-list .faq-a");
+        const faqs = Array.from(qs)
+          .map((q, i) => ({ question: q.value, answer: as[i]?.value || "" }))
           .filter((f) => f.question && f.answer);
         await fetch("/dashboard/business", {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ faqs }),
         });
-        showSuccess("faq-success");
+        showOk("faq-ok");
       }
-
-      function showSuccess(id) {
-        const el = document.getElementById(id);
-        el.style.display = "block";
-        setTimeout(() => (el.style.display = "none"), 3000);
+      function addPricing() {
+        const r = document.createElement("div");
+        r.className = "pricing-row";
+        r.innerHTML =
+          '<input placeholder="Item name" class="item-name"/><input placeholder="Price" style="max-width:110px;" class="item-price"/><button class="del-btn" onclick="this.parentElement.remove()">×</button>';
+        document.getElementById("pricing-list").appendChild(r);
       }
-
+      function addFaq() {
+        document.getElementById("faq-list").innerHTML +=
+          '<div class="form-group"><label class="form-label">Question</label><input class="faq-q" placeholder="e.g. Do you deliver?"/></div><div class="form-group"><label class="form-label">Answer</label><textarea class="faq-a" placeholder="Your answer..."></textarea></div>';
+      }
+      function showOk(id) {
+        const e = document.getElementById(id);
+        e.style.display = "block";
+        setTimeout(() => (e.style.display = "none"), 3000);
+      }
       async function logout() {
         await fetch("/auth/logout", { method: "POST" });
-        window.location.href = "/";
+        window.location.href = "/login";
       }
 
       loadDashboard();
