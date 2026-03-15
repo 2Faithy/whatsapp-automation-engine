@@ -1,3 +1,4 @@
+const { sendNewBusinessAlert, sendWelcomeEmail } = require("../../functions/emailService");
 const express = require("express");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
@@ -86,7 +87,9 @@ router.post("/register", (req, res) => {
               httpOnly: true,
               maxAge: 7 * 24 * 60 * 60 * 1000,
             });
-            return res.json({ success: true, redirect: "/onboarding" });
+            sendWelcomeEmail(name, email, business_name).catch(() => {});
+sendNewBusinessAlert({ name: business_name, whatsapp_number: cleanPhone }, email).catch(() => {});
+return res.json({ success: true, redirect: "/onboarding" });
           });
       });
     })
