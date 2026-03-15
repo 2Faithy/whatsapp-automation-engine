@@ -9,26 +9,36 @@ const {
 } = require("../config/businessConfig");
 
 // ============================================
-// 1. INTENT PATTERNS
+// INTENT PATTERNS — English + Pidgin
 // ============================================
 const intentPatterns = [
   {
     intent: "greeting",
-    patterns: [
+    keywords: [
       "hi",
       "hello",
       "hey",
+      "howdy",
       "good morning",
       "good afternoon",
       "good evening",
-      "howdy",
-      "whats up",
       "good day",
+      "good night",
+      "sup",
+      "whats up",
+      "how are you",
+      "how you dey",
+      "how far",
+      "oga",
+      "madam",
+      "abeg",
+      "bros",
+      "sis",
     ],
   },
   {
     intent: "pricing",
-    patterns: [
+    keywords: [
       "how much",
       "price",
       "cost",
@@ -37,79 +47,182 @@ const intentPatterns = [
       "rate",
       "pricing",
       "menu",
+      "price list",
       "what do you sell",
       "your prices",
       "how much is",
       "wetin dey cost",
       "how much e go cost",
-      "price list",
       "how much for",
       "what is the price",
-      "jollof",
-      "fried rice",
-      "food menu",
+      "cost of",
+      "how much dem dey sell",
+      "na how much",
+      "tell me the price",
+      "what can i buy",
       "what do you have",
+      "show me your menu",
+      "catalogue",
+      "list of services",
+      "services",
     ],
   },
   {
     intent: "hours",
-    patterns: [
-      "opening hours",
-      "closing time",
+    keywords: [
+      "open",
+      "close",
+      "opening",
+      "closing",
+      "hours",
+      "when do you",
+      "what time",
+      "business hours",
+      "you still open",
+      "una dey open",
+      "dey open",
+      "when una dey",
+      "are you open",
+      "you open",
+      "open now",
+      "still open",
       "when do you open",
       "when do you close",
-      "are you open",
-      "business hours",
-      "what time",
-      "you still open",
-      "when una dey open",
+      "working hours",
+      "operation hours",
     ],
   },
   {
     intent: "location",
-    patterns: [
-      "where are you",
-      "your address",
-      "location",
-      "where is your shop",
-      "how do i find you",
-      "directions",
-      "where una dey",
+    keywords: [
+      "where",
       "address",
+      "location",
+      "directions",
+      "find you",
+      "how to get",
+      "where are you",
+      "where is your",
+      "where una dey",
+      "your shop",
+      "your office",
+      "your store",
+      "google maps",
+      "map",
+      "how far",
+      "near me",
+      "closest",
+      "branch",
     ],
   },
   {
     intent: "contact",
-    patterns: [
-      "call you",
-      "phone number",
+    keywords: [
+      "call",
+      "phone",
       "email",
       "contact",
-      "speak to someone",
-      "talk to agent",
+      "agent",
       "human",
-      "real person",
+      "person",
+      "talk to",
+      "speak to",
       "customer service",
+      "support",
+      "reach you",
+      "how to contact",
+      "your number",
+      "whatsapp number",
       "connect me",
+      "real person",
+      "operator",
+    ],
+  },
+  {
+    intent: "delivery",
+    keywords: [
+      "deliver",
+      "delivery",
+      "shipping",
+      "ship",
+      "send to me",
+      "bring it",
+      "do you deliver",
+      "home delivery",
+      "dispatch",
+      "courier",
+      "logistics",
+      "collect",
+      "pickup",
+      "drop off",
+      "delivery fee",
+      "how long delivery",
+      "how long will it take",
     ],
   },
   {
     intent: "order_status",
-    patterns: [
+    keywords: [
       "order status",
-      "track my order",
-      "where is my order",
+      "track",
       "my order",
       "check order",
+      "where is my order",
       "order number",
-      "delivery status",
       "when will it arrive",
       "my package",
+      "my item",
+      "i ordered",
+      "i paid",
+      "i already paid",
+      "waiting for",
+    ],
+  },
+  {
+    intent: "payment",
+    keywords: [
+      "payment",
+      "pay",
+      "how to pay",
+      "payment method",
+      "transfer",
+      "bank account",
+      "account number",
+      "pos",
+      "cash",
+      "card",
+      "online payment",
+      "paystack",
+      "flutterwave",
+      "opay",
+      "palmpay",
+      "momo",
+      "do you accept",
+      "can i pay",
+    ],
+  },
+  {
+    intent: "booking",
+    keywords: [
+      "book",
+      "booking",
+      "reserve",
+      "reservation",
+      "appointment",
+      "schedule",
+      "slot",
+      "availability",
+      "available",
+      "when can i come",
+      "can i come",
+      "visit",
+      "walk in",
+      "i want to come",
     ],
   },
   {
     intent: "complaint",
-    patterns: [
+    keywords: [
       "complaint",
       "not working",
       "broken",
@@ -123,11 +236,19 @@ const intentPatterns = [
       "refund",
       "scam",
       "i want my money back",
+      "bad product",
+      "not satisfied",
+      "rubbish",
+      "nonsense",
+      "terrible",
+      "worst",
+      "cheated",
+      "fraud",
     ],
   },
   {
     intent: "thanks",
-    patterns: [
+    keywords: [
       "thank you",
       "thanks",
       "appreciate",
@@ -136,11 +257,17 @@ const intentPatterns = [
       "thnks",
       "e dey work",
       "nice one",
+      "you too much",
+      "well done",
+      "good job",
+      "amazing",
+      "excellent",
+      "great",
     ],
   },
   {
     intent: "goodbye",
-    patterns: [
+    keywords: [
       "bye",
       "goodbye",
       "see you",
@@ -149,28 +276,48 @@ const intentPatterns = [
       "ok thanks",
       "thank you bye",
       "cya",
+      "take care",
+      "good night",
+      "talk later",
+      "i go come back",
+      "will come back",
     ],
   },
 ];
 
 // ============================================
-// 2. GENERIC RESPONSES
+// CHECK IF BUSINESS IS OPEN RIGHT NOW
 // ============================================
-const genericResponses = {
-  greeting: (business) => business.greeting,
-  order_status: () =>
-    "Please share your order number and we will check it immediately! 📦",
-  complaint: () =>
-    "I am really sorry to hear that 😔 Please describe what happened and we will fix it right away.",
-  thanks: () =>
-    "You are welcome! 😊 Is there anything else I can help you with?",
-  goodbye: () =>
-    "Goodbye! Have a wonderful day! Feel free to reach out anytime 👋",
-  unknown: (business) => business.fallback,
-};
+function isBusinessOpen(business) {
+  if (!business.hours) return null;
+  const now = new Date();
+  const day = now.getDay(); // 0=Sun, 1=Mon...6=Sat
+  const hour = now.getHours();
+
+  let hoursStr = "";
+  if (day === 0) hoursStr = business.hours.sunday || "";
+  else if (day === 6) hoursStr = business.hours.saturday || "";
+  else hoursStr = business.hours.weekdays || "";
+
+  if (!hoursStr || hoursStr.toLowerCase() === "closed") return false;
+
+  // Parse "8am - 9pm" or "8:00 - 21:00"
+  const match = hoursStr.match(
+    /(\d+)(?::(\d+))?\s*(am|pm)?\s*[-–]\s*(\d+)(?::(\d+))?\s*(am|pm)?/i
+  );
+  if (!match) return null;
+
+  let openH = parseInt(match[1]);
+  let closeH = parseInt(match[4]);
+  if (match[3]?.toLowerCase() === "pm" && openH < 12) openH += 12;
+  if (match[6]?.toLowerCase() === "pm" && closeH < 12) closeH += 12;
+  if (match[3]?.toLowerCase() === "am" && openH === 12) openH = 0;
+
+  return hour >= openH && hour < closeH;
+}
 
 // ============================================
-// 3. TEXT CLEANER
+// TEXT CLEANER
 // ============================================
 function cleanText(text) {
   return text
@@ -181,172 +328,137 @@ function cleanText(text) {
 }
 
 // ============================================
-// 4. INTENT CLASSIFIER
+// INTENT CLASSIFIER
 // ============================================
 function classifyIntent(text) {
   const cleaned = cleanText(text);
 
-  // Priority keywords — checked first
-  const priorityChecks = [
-    {
-      keywords: [
-        "how much",
-        "price",
-        "cost",
-        "menu",
-        "fee",
-        "rate",
-        "pricing",
-        "wetin dey cost",
-        "jollof",
-        "fried rice",
-        "food",
-      ],
-      intent: "pricing",
-    },
-    {
-      keywords: [
-        "open",
-        "hours",
-        "closing",
-        "when do you",
-        "what time",
-        "dey open",
-        "una dey",
-      ],
-      intent: "hours",
-    },
-    {
-      keywords: ["where", "address", "location", "directions", "find you"],
-      intent: "location",
-    },
-    {
-      keywords: [
-        "call",
-        "phone",
-        "email",
-        "contact",
-        "agent",
-        "human",
-        "person",
-      ],
-      intent: "contact",
-    },
-    {
-      keywords: ["order", "track", "delivery status", "package", "shipment"],
-      intent: "order_status",
-    },
-    {
-      keywords: [
-        "complaint",
-        "refund",
-        "broken",
-        "bad",
-        "wrong",
-        "damaged",
-        "problem",
-        "issue",
-      ],
-      intent: "complaint",
-    },
-    { keywords: ["thank", "thanks", "appreciate", "thx"], intent: "thanks" },
-    { keywords: ["bye", "goodbye", "later", "see you"], intent: "goodbye" },
-    {
-      keywords: [
-        "hi",
-        "hello",
-        "hey",
-        "good morning",
-        "good afternoon",
-        "good evening",
-        "good day",
-      ],
-      intent: "greeting",
-    },
-  ];
-
-  for (const check of priorityChecks) {
-    if (check.keywords.some((keyword) => cleaned.includes(keyword))) {
-      return check.intent;
-    }
+  // Priority order matters — check specific before general
+  for (const { intent, keywords } of intentPatterns) {
+    if (keywords.some((k) => cleaned.includes(k))) return intent;
   }
 
-  // Fuzzy match fallback
-  const allPatterns = [];
-  intentPatterns.forEach((item) => {
-    item.patterns.forEach((pattern) => {
-      allPatterns.push({ intent: item.intent, pattern });
-    });
-  });
-
-  const fuse = new Fuse(allPatterns, { keys: ["pattern"], threshold: 0.3 });
+  // Fuzzy fallback
+  const allPatterns = intentPatterns.flatMap((item) =>
+    item.keywords.map((k) => ({ intent: item.intent, pattern: k }))
+  );
+  const fuse = new Fuse(allPatterns, { keys: ["pattern"], threshold: 0.35 });
   const result = fuse.search(cleaned);
-  if (result.length > 0) {
-    return result[0].item.intent;
-  }
+  if (result.length > 0) return result[0].item.intent;
 
   return "unknown";
 }
 
 // ============================================
-// 5. ENTITY EXTRACTOR
+// RESPONSE BUILDER
 // ============================================
-function extractEntities(text) {
-  const doc = nlp(text);
-  return {
-    names: doc.people().out("array"),
-    places: doc.places().out("array"),
-    numbers: doc.values().out("array"),
-  };
+function buildReply(intent, business) {
+  const name = business.name || "us";
+
+  switch (intent) {
+    case "greeting": {
+      const open = isBusinessOpen(business);
+      const statusNote =
+        open === true
+          ? " We are currently open! 🟢"
+          : open === false
+          ? " Note: We are currently closed, but feel free to leave a message."
+          : "";
+      return (
+        (business.greeting || `Welcome to ${name}! How can I help you today?`) +
+        statusNote
+      );
+    }
+
+    case "pricing":
+      return formatPricing(business);
+
+    case "hours": {
+      const open = isBusinessOpen(business);
+      const status =
+        open === true
+          ? "\n\n✅ We are currently OPEN!"
+          : open === false
+          ? "\n\n❌ We are currently CLOSED."
+          : "";
+      return formatHours(business) + status;
+    }
+
+    case "location":
+      return formatLocation(business);
+
+    case "contact":
+      return formatContact(business);
+
+    case "delivery":
+      if (business.delivery_info) return business.delivery_info;
+      return `For delivery enquiries at ${name}, please contact us directly:\n${formatContact(
+        business
+      )}`;
+
+    case "payment":
+      if (business.payment_info) return business.payment_info;
+      return `For payment options at ${name}, please contact us:\n${formatContact(
+        business
+      )}`;
+
+    case "booking":
+      if (business.booking_info) return business.booking_info;
+      return `To make a booking at ${name}, please contact us:\n${formatContact(
+        business
+      )}\n\nOr visit us at:\n${formatLocation(business)}`;
+
+    case "order_status":
+      return `To check your order status, please share your order number or contact us directly:\n${formatContact(
+        business
+      )}`;
+
+    case "complaint":
+      return `We are really sorry to hear that 😔 Your satisfaction is our priority.\n\nPlease describe what happened and contact us so we can resolve this immediately:\n${formatContact(
+        business
+      )}`;
+
+    case "thanks":
+      return `You are welcome! 😊 We are happy to help. Is there anything else I can assist you with?`;
+
+    case "goodbye":
+      return `Thank you for reaching out to ${name}! Have a wonderful day 👋 Feel free to message us anytime.`;
+
+    default:
+      return (
+        business.fallback ||
+        `I'm not sure I understand. Here's how I can help you:\n\n1️⃣ Prices & Menu\n2️⃣ Opening Hours\n3️⃣ Location\n4️⃣ Contact us\n5️⃣ Delivery info\n\nJust type what you need! 😊`
+      );
+  }
 }
 
 // ============================================
-// 6. MAIN PROCESS
+// MAIN PROCESS FUNCTION
 // ============================================
 function processMessage(text, business) {
-  // Check FAQs first
+  if (!text || !business)
+    return { intent: "unknown", reply: "Hi! How can I help you?" };
+
+  // FAQ check first
   const faqAnswer = checkFAQ(business, text);
-  if (faqAnswer) {
-    return { intent: "faq", reply: faqAnswer };
-  }
+  if (faqAnswer) return { intent: "faq", reply: faqAnswer };
+
+  // Number shortcuts (1, 2, 3, 4, 5)
+  const trimmed = text.trim();
+  if (trimmed === "1")
+    return { intent: "pricing", reply: buildReply("pricing", business) };
+  if (trimmed === "2")
+    return { intent: "hours", reply: buildReply("hours", business) };
+  if (trimmed === "3")
+    return { intent: "location", reply: buildReply("location", business) };
+  if (trimmed === "4")
+    return { intent: "contact", reply: buildReply("contact", business) };
+  if (trimmed === "5")
+    return { intent: "delivery", reply: buildReply("delivery", business) };
 
   const intent = classifyIntent(text);
-  const entities = extractEntities(text);
-
-  let reply;
-  switch (intent) {
-    case "greeting":
-      reply = genericResponses.greeting(business);
-      break;
-    case "pricing":
-      reply = formatPricing(business);
-      break;
-    case "hours":
-      reply = formatHours(business);
-      break;
-    case "location":
-      reply = formatLocation(business);
-      break;
-    case "contact":
-      reply = formatContact(business);
-      break;
-    case "order_status":
-      reply = genericResponses.order_status();
-      break;
-    case "complaint":
-      reply = genericResponses.complaint();
-      break;
-    case "thanks":
-      reply = genericResponses.thanks();
-      break;
-    case "goodbye":
-      reply = genericResponses.goodbye();
-      break;
-    default:
-      reply = genericResponses.unknown(business);
-  }
-
-  return { intent, entities, reply };
+  const reply = buildReply(intent, business);
+  return { intent, reply };
 }
 
 module.exports = { processMessage };
